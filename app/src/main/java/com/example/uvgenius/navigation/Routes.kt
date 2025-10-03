@@ -1,9 +1,11 @@
 package com.example.uvgenius.navigation
 
-object Routes {
-    const val LOGIN = "login"
-    const val HOME = "home"
-    const val TutorDetail = "tutor_detail"
+sealed class Routes(val route: String) {
+    data object LOGIN: Routes(route = "login")
+    data object HOME: Routes("home")
+    data object TutorDetail: Routes("tutor_detail")
+    data object TutorList: Routes("tutor_list")
+
 }
 
 

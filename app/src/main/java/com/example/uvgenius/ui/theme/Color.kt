@@ -2,10 +2,7 @@ package com.example.uvgenius.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val BackgroundGreen = Color(0xFF388423)
+val PrimaryGreen = Color(0xFF348B4B)
+val ContentGray = Color(0xFFD0CBCB)
+val ContentWhite = Color(0xFFFFFFFF)

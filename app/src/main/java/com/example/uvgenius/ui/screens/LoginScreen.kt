@@ -19,7 +19,12 @@ fun LoginScreen(onLogin: (String, String) -> Unit) {
     var pass by remember { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
 
-    Surface(Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.primary
+    ){innerPadding ->
+        Modifier.padding(innerPadding) // Solo para quitar el error de no usar innerPadding
         Column(
             Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -29,6 +34,7 @@ fun LoginScreen(onLogin: (String, String) -> Unit) {
                 Text("UV", color = Color.White, style = MaterialTheme.typography.titleLarge)
             }
             Spacer(Modifier.height(16.dp))
+
             Text("UVGenios", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Color(0xFF1D5E34))
             Spacer(Modifier.height(8.dp))
             Text("Bienvenido", style = MaterialTheme.typography.headlineMedium)

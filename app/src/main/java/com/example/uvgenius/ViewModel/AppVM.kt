@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.uvgenius.model.Tutor
-import com.example.uvgenius.model.TutoriaSlot
 import java.time.LocalDate
 
 class AppVM : ViewModel() {
