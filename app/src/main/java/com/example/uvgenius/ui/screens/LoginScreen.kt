@@ -12,9 +12,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.uvgenius.ui.view.AppVM
 
 @Composable
-fun LoginScreen(onLogin: (String, String) -> Unit) {
+fun LoginScreen(navController: NavController, viewModel: AppVM) {
     var user by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
@@ -50,8 +52,9 @@ fun LoginScreen(onLogin: (String, String) -> Unit) {
             Spacer(Modifier.height(16.dp))
             Button(
                 onClick = {
+                    //TODO: IMPLEMENTAR FETCH DE USUARIO Y CONTRASENA, Y LA LOGICA DEL LOGIN
                     val ok = user.isNotBlank() && pass.isNotBlank()
-                    if (!ok) error = true else onLogin(user, pass)
+                    if (!ok) error = true else {navController.navigate("home") { popUpTo("login") { inclusive = true } }}
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)

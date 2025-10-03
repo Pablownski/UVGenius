@@ -1,21 +1,18 @@
 package com.example.uvgenius.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.uvgenius.ui.screens.*
-import com.example.uvgenius.ViewModel.AppVM
+import com.example.uvgenius.ui.view.AppVM
 
 @Composable
 fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
-    NavHost(navController = navController, startDestination = Routes.Login) {
+    NavHost(navController = navController, startDestination = Routes.Login.route) {
         composable(Routes.Login.route) {
-            LoginScreen(onLogin = { u, p ->
-                if (viewModel.login(u, p)) {
-                    navController.navigate(Routes.Home) { popUpTo(Routes.Login) { inclusive = true } }
-                }
-            })
+            LoginScreen(navController = navController, viewModel = viewModel)
         }
         composable(Routes.Home.route) {
             HomeScreen(navController = navController, viewModel = viewModel)

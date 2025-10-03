@@ -9,7 +9,7 @@ data class Usuario (
     val password: String,
     val carrera: String,
     var cursos: List<String>,
-    var tutorias: List<String>,
+    var tutorias: List<Tutoria>,
     val telefono: String,
     val email: String,
     @DrawableRes

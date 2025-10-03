@@ -68,7 +68,7 @@ fun BottomNavBar(
     }
 }
 
-/** Navegación “singleTop” entre tabs con restore de estado */
+
 fun NavController.navigateSingleTopTo(route: String) {
     navigate(route) {
         launchSingleTop = true

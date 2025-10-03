@@ -14,14 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.uvgenius.ui.view.AppVM
 import com.example.uvgenius.model.Tutoria
 import com.example.uvgenius.ui.components.TutoriaCard
 
 @Composable
-fun HomeScreen(
-    tutorias: List<Tutoria>,
-    onAgregarTutoriaClick: () -> Unit
-) {
+fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.White
@@ -32,21 +31,23 @@ fun HomeScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Lista de tutorías
+
             LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
-                items(tutorias) { tutoria ->
-                    TutoriaCard(tutoria)
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+               viewModel.usuarioLogeado!!.tutorias.forEach { tutoria ->
+                   item {
+                       TutoriaCard(tutoria)
+                   }
+               }
+
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón para agregar tutoría
+
             Button(
-                onClick = onAgregarTutoriaClick,
+                onClick = {},// TODO: Agregar modal bottom sheet
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

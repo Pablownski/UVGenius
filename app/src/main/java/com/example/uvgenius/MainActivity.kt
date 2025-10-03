@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.uvgenius.ViewModel.AppVM
+import com.example.uvgenius.ui.view.AppVM
 import com.example.uvgenius.navigation.AppNavHost
 import com.example.uvgenius.ui.screens.TutorsListScreen
 import com.example.uvgenius.ui.theme.UVGeniusTheme
