@@ -25,7 +25,7 @@ import com.example.uvgenius.ui.view.AppVM
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AppVM) {
-    var user by remember { mutableStateOf("") }
+    var mail by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
 
@@ -62,9 +62,9 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OutlinedTextField(
-                        value = user,
-                        onValueChange = { user = it },
-                        label = { Text("Usuario") },
+                        value = mail,
+                        onValueChange = { mail = it },
+                        label = { Text("Correo electrónico") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
@@ -99,12 +99,9 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
 
                     Button(
                         onClick = {
-                            val usuario = viewModel.UserList.find { it.nombre == user && it.password == pass }
-                            if (usuario != null) {
-                                viewModel.usuarioLogeado = usuario
-                                navController.navigate(Routes.Home.route) {
-                                    popUpTo(Routes.Login.route) { inclusive = true }
-                                }
+                            if (viewModel.checkLogin(mail, pass)) {
+                                viewModel.login(mail,pass)
+                                navController.navigate(Routes.Home.route)
                             } else {
                                 error = true
                             }

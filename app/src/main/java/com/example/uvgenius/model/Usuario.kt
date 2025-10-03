@@ -5,6 +5,7 @@ package com.example.uvgenius.model
 import androidx.annotation.DrawableRes
 
 data class Usuario (
+    val id: Int,
     val nombre: String,
     val password: String,
     val carrera: String,

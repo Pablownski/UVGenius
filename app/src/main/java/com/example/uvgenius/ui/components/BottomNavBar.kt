@@ -28,19 +28,18 @@ data class NavItem(
 )
 @Composable
 fun BottomNavBar(
-    navController: NavController,
-    modifier: Modifier = Modifier
+    navController: NavController
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
     val navItems: LinkedHashMap<NavItem, String> = linkedMapOf(
-        NavItem("Inicio", Icons.Filled.Home) to "home",
         NavItem("Perfil", Icons.Outlined.Person) to "user_profile",
+        NavItem("Inicio", Icons.Filled.Home) to "home",
         NavItem("Tutores", Icons.Outlined.Search) to "tutor_list"
     )
 
-    NavigationBar(modifier = modifier,
+    NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {

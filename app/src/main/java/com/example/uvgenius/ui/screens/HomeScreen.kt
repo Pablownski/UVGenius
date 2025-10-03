@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,22 +21,36 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.uvgenius.ui.view.AppVM
 import com.example.uvgenius.model.Tutoria
+import com.example.uvgenius.navigation.Routes
 import com.example.uvgenius.ui.components.BottomNavBar
-import com.example.uvgenius.ui.components.TopAppBar
+import com.example.uvgenius.ui.components.TopNavBar
 import com.example.uvgenius.ui.components.TutoriaCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
+
+    val user = viewModel.usuarioLogeado
+    LaunchedEffect(user) {
+        if (user == null) {
+            navController.navigate(Routes.Login.route) {
+                popUpTo(0)
+                launchSingleTop = true
+            }
+        }
+    }
+    if (user == null) {
+        return
+    }
     Scaffold (
         modifier = Modifier.fillMaxSize(),
-        bottomBar = { BottomNavBar(navController, Modifier) },
-        topBar = { TopAppBar(onLogout = { }) },
+        bottomBar = { BottomNavBar(navController) },
+        topBar = { TopNavBar(onLogout = { viewModel.logout() }) },
     ) {innerPadding ->
-        Modifier.padding(innerPadding)
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -43,8 +58,17 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
             LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
-                viewModel.usuarioLogeado?.tutorias?.forEach { tutoria ->
-                    item {
+                val userTutorias = viewModel.usuarioLogeado!!.tutorias
+                if (userTutorias.isEmpty()){
+                    item{
+                        Text(
+                            "Lista aquí las tutorías que hayas agendado con el botón inferior!",
+                            fontSize = 18.sp,
+                            color = Color.Gray
+                        )
+                    }
+                } else {
+                    items(userTutorias) { tutoria ->
                         TutoriaCard(tutoria)
                     }
                 }

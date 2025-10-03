@@ -38,9 +38,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ){
                     AppNavHost(
-                    navController = navController,
-                    viewModel = viewModel
-                )}
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
             }
         }
     }

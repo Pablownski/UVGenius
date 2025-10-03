@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -19,7 +20,7 @@ import com.example.uvgenius.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(onLogout: () -> Unit){
+fun TopNavBar(onLogout: () -> Unit){
     CenterAlignedTopAppBar(
         title = {
             Image(
@@ -38,10 +39,10 @@ fun TopAppBar(onLogout: () -> Unit){
             }
         },
         navigationIcon = {},
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.secondary,
             navigationIconContentColor = MaterialTheme.colorScheme.secondary,
+            titleContentColor = MaterialTheme.colorScheme.secondary,
             actionIconContentColor = MaterialTheme.colorScheme.secondary
         )
     )

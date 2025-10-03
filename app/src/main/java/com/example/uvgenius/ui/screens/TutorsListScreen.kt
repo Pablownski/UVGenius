@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,9 +17,10 @@ import androidx.compose.ui.unit.sp
 import com.example.uvgenius.model.Usuario
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import com.example.uvgenius.navigation.Routes
 import com.example.uvgenius.ui.view.AppVM
 import com.example.uvgenius.ui.components.BottomNavBar
-import com.example.uvgenius.ui.components.TopAppBar
+import com.example.uvgenius.ui.components.TopNavBar
 import com.example.uvgenius.ui.components.TutorCard
 
 
@@ -27,16 +29,24 @@ import com.example.uvgenius.ui.components.TutorCard
 @Composable
 fun TutorsListScreen(
     navController: NavController,
-    viewModel: AppVM,
-    modifier: Modifier
+    viewModel: AppVM
 ) {
+    val user = viewModel.usuarioLogeado
+    LaunchedEffect(user) {
+        if (user == null) {
+            navController.navigate(Routes.Login.route) {
+                popUpTo(0)
+                launchSingleTop = true
+            }
+        }
+    }
+    if (user == null) {
+        return
+    }
+
     Scaffold(
-        topBar = { TopAppBar(
-            onLogout = {
-                viewModel.usuarioLogeado = null
-                navController.navigate("login") { popUpTo("home") { inclusive = true } }
-            }) },
-        bottomBar = { BottomNavBar(navController, modifier) }
+        topBar = { TopNavBar(onLogout = { viewModel.logout() }) },
+        bottomBar = { BottomNavBar(navController) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -58,7 +68,7 @@ fun TutorsListScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            viewModel.UserList.forEach { tutor ->
+            viewModel.userList.forEach { tutor ->
                 TutorCard(tutor)
                 Spacer(modifier = Modifier.height(8.dp))
             }
