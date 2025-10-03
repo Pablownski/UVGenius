@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.uvgenius.ui.screens.TutorsListScreen
 import com.example.uvgenius.ui.theme.UVGeniusTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,10 +39,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingPreview() {
-    UVGeniusTheme {
-        Greeting("Android")
-    }
+fun TutorsListScreenPreview() {
+    TutorsListScreen()
 }

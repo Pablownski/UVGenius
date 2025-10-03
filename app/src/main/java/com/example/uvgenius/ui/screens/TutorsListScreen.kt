@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uvgenius.model.Tutor
 import androidx.compose.ui.tooling.preview.Preview
-// ---- Datos de prueba ----
+
+
 val listaTutores = listOf(
     Tutor("Juan", "Álgebra Lineal"),
     Tutor("Diego", "Cálculo 2"),
@@ -26,7 +27,7 @@ val listaTutores = listOf(
     Tutor("Daniel", "Cálculo 2")
 )
 
-// ---- Pantalla principal ----
+
 @Composable
 fun TutorsListScreen() {
     Scaffold(
@@ -38,7 +39,6 @@ fun TutorsListScreen() {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            // ---- Barra de búsqueda + botón filtro ----
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -53,7 +53,6 @@ fun TutorsListScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ---- Lista de tutores ----
             listaTutores.forEach { tutor ->
                 TutorCard(tutor)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -62,7 +61,6 @@ fun TutorsListScreen() {
     }
 }
 
-// ---- Tarjeta de Tutor ----
 @Composable
 fun TutorCard(tutor: Tutor) {
     Row(
@@ -95,38 +93,6 @@ fun TutorCard(tutor: Tutor) {
     }
 }
 
-// ---- Bottom Navigation ----
-@Composable
-fun BottomBar() {
-    NavigationBar(
-        containerColor = Color(0xFF2E7D32)
-    ) {
-        NavigationBarItem(
-            selected = true,
-            onClick = { },
-            icon = { Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.White) }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = {
-                Text(
-                    text = "02/10/2025",
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Configuración", tint = Color.White) }
-        )
-    }
-}
 
 
 @Preview(showBackground = true, showSystemUi = true)
