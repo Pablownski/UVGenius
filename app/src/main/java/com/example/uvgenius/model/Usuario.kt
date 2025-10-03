@@ -4,12 +4,14 @@ package com.example.uvgenius.model
 
 import androidx.annotation.DrawableRes
 
-data class Usuario(
+data class Usuario (
     val nombre: String,
     val password: String,
     val carrera: String,
     var cursos: List<String>,
+    var tutorias: List<String>,
     val telefono: String,
     val email: String,
-    @DrawableRes val avatar: String
+    @DrawableRes
+    val avatar: Int
 )
