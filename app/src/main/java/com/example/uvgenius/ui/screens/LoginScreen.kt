@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.uvgenius.R
+import com.example.uvgenius.navigation.Routes
 import com.example.uvgenius.ui.theme.BackgroundGreen
 import com.example.uvgenius.ui.theme.PrimaryGreen
 import com.example.uvgenius.ui.view.AppVM
@@ -98,11 +99,14 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
 
                     Button(
                         onClick = {
-                            val ok = user.isNotBlank() && pass.isNotBlank()
-                            if (!ok) error = true else {
-                                navController.navigate("home") {
-                                    popUpTo("login") { inclusive = true }
+                            val usuario = viewModel.UserList.find { it.nombre == user && it.password == pass }
+                            if (usuario != null) {
+                                viewModel.usuarioLogeado = usuario
+                                navController.navigate(Routes.Home.route) {
+                                    popUpTo(Routes.Login.route) { inclusive = true }
                                 }
+                            } else {
+                                error = true
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),

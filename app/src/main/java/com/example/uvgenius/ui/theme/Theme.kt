@@ -16,7 +16,8 @@ private val LightColorScheme = lightColorScheme(
     primary = ContentWhite,
     secondary = PrimaryGreen,
     background = BackgroundGreen,
-    onBackground = ContentGray
+    onBackground = ContentGray,
+    onTertiary = ContentDarkGray
 
 
     /* Other default colors to override

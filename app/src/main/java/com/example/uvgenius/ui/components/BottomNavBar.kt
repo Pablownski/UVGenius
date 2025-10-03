@@ -3,6 +3,8 @@ package com.example.uvgenius.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -34,8 +36,8 @@ fun BottomNavBar(
 
     val navItems: LinkedHashMap<NavItem, String> = linkedMapOf(
         NavItem("Inicio", Icons.Filled.Home) to "home",
-        NavItem("Menú", Icons.Outlined.Menu) to "menu",
-        NavItem("Tutores", Icons.Outlined.Menu) to "tutores",
+        NavItem("Perfil", Icons.Outlined.Person) to "user_profile",
+        NavItem("Tutores", Icons.Outlined.Search) to "tutor_list"
     )
 
     NavigationBar(modifier = modifier,
@@ -59,9 +61,9 @@ fun BottomNavBar(
                 },
                 label = { Text(item.label) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    indicatorColor = MaterialTheme.colorScheme.primary
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.secondary,
+                    indicatorColor = MaterialTheme.colorScheme.secondary
                 )
             )
         }

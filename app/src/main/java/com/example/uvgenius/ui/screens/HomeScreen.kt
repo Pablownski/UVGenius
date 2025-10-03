@@ -6,8 +6,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,14 +20,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.uvgenius.ui.view.AppVM
 import com.example.uvgenius.model.Tutoria
+import com.example.uvgenius.ui.components.BottomNavBar
+import com.example.uvgenius.ui.components.TopAppBar
 import com.example.uvgenius.ui.components.TutoriaCard
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
-    Surface(
+    Scaffold (
         modifier = Modifier.fillMaxSize(),
-        color = Color.White
-    ) {
+        bottomBar = { BottomNavBar(navController, Modifier) },
+        topBar = { TopAppBar(onLogout = { }) },
+    ) {innerPadding ->
+        Modifier.padding(innerPadding)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -35,11 +43,11 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
             LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
-               viewModel.usuarioLogeado!!.tutorias.forEach { tutoria ->
-                   item {
-                       TutoriaCard(tutoria)
-                   }
-               }
+                viewModel.usuarioLogeado?.tutorias?.forEach { tutoria ->
+                    item {
+                        TutoriaCard(tutoria)
+                    }
+                }
 
             }
 

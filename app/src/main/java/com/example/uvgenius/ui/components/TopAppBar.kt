@@ -23,9 +23,8 @@ fun TopAppBar(onLogout: () -> Unit){
     CenterAlignedTopAppBar(
         title = {
             Image(
-                painter = painterResource(R.drawable.logo),
-                contentDescription = "Logo Banco",
-                modifier = Modifier.height(32.dp),
+                painter = painterResource(R.drawable.letras),
+                contentDescription = "Logo UVGenius",
                 contentScale = ContentScale.Fit
             )
         },
@@ -33,16 +32,17 @@ fun TopAppBar(onLogout: () -> Unit){
             IconButton(onClick = onLogout) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.Logout,
-                    contentDescription = "Cerrar sesión"
+                    contentDescription = "Cerrar sesión",
+                    tint = MaterialTheme.colorScheme.onTertiary
                 )
             }
         },
         navigationIcon = {},
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+            titleContentColor = MaterialTheme.colorScheme.secondary,
+            navigationIconContentColor = MaterialTheme.colorScheme.secondary,
+            actionIconContentColor = MaterialTheme.colorScheme.secondary
         )
     )
 }
