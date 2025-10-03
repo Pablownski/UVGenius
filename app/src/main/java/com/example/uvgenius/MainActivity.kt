@@ -11,6 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.uvgenius.ViewModel.AppVM
+import com.example.uvgenius.navigation.AppNavHost
 import com.example.uvgenius.ui.screens.TutorsListScreen
 import com.example.uvgenius.ui.theme.UVGeniusTheme
 
@@ -19,28 +23,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
+            val viewModel = AppVM()
             UVGeniusTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppNavHost(
+                    navController = navController,
+                    viewModel = viewModel
+                )
             }
         }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TutorsListScreenPreview() {
-    TutorsListScreen()
 }

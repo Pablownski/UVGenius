@@ -15,8 +15,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.uvgenius.model.Usuario
 import androidx.compose.ui.tooling.preview.Preview
-
-
+import androidx.navigation.NavController
+import com.example.uvgenius.ViewModel.AppVM
+import com.example.uvgenius.ui.components.BottomNavBar
+import com.example.uvgenius.ui.components.TopAppBar
+import com.example.uvgenius.ui.components.TutorCard
 
 
 val UserList = listOf(
@@ -30,10 +33,21 @@ val UserList = listOf(
   )
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TutorsListScreen() {
+fun TutorsListScreen(
+    navController: NavController,
+    listaTutores: List<Usuario> = UserList,
+    viewModel: AppVM,
+    modifier: Modifier
+) {
     Scaffold(
-        bottomBar = { BottomBar() }
+        topBar = { TopAppBar(
+            onLogout = {
+                viewModel.usuarioLogeado = null
+                navController.navigate("login") { popUpTo("home") { inclusive = true } }
+            }) },
+        bottomBar = { BottomNavBar(navController, modifier) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -62,37 +76,4 @@ fun TutorsListScreen() {
         }
     }
 }
-
-@Composable
-fun TutorCard(tutor: Usuario) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.LightGray)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Box(
-            modifier = Modifier
-                .size(50.dp)
-                .background(Color(0xFF2E7D32), CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Avatar",
-                tint = Color.White
-            )
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column {
-            Text(text = Usuario.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(text = Usuario.cursos, fontSize = 14.sp)
-        }
-    }
-}
-
 

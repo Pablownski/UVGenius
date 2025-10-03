@@ -8,7 +8,6 @@ import java.time.LocalDate
 
 class AppVM() {
     var usuarioLogeado by mutableStateOf<String?>(null)
-        private set
 
 
     fun login(user: String, pass: String): Boolean {
