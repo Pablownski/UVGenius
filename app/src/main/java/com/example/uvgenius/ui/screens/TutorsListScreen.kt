@@ -96,9 +96,3 @@ fun TutorCard(tutor: Usuario) {
 }
 
 
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TutorsListScreenPreview() {
-    TutorsListScreen()
-}
