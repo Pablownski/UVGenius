@@ -15,7 +15,9 @@ import androidx.compose.ui.platform.LocalContext
 private val LightColorScheme = lightColorScheme(
     primary = ContentWhite,
     secondary = PrimaryGreen,
-    background = BackgroundGreen
+    background = BackgroundGreen,
+    onBackground = ContentGray
+
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
