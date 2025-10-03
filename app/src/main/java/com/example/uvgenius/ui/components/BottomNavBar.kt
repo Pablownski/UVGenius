@@ -34,7 +34,8 @@ fun BottomNavBar(
 
     val navItems: LinkedHashMap<NavItem, String> = linkedMapOf(
         NavItem("Inicio", Icons.Filled.Home) to "home",
-        NavItem("Menú", Icons.Outlined.Menu) to "menu"
+        NavItem("Menú", Icons.Outlined.Menu) to "menu",
+        NavItem("Tutores", Icons.Outlined.Menu) to "tutores",
     )
 
     NavigationBar(modifier = modifier,

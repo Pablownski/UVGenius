@@ -13,7 +13,6 @@ import androidx.navigation.NavController
 import com.example.uvgenius.ui.components.BottomNavBar
 import com.example.uvgenius.ui.components.TutorCard
 
-// ---- Pantalla principal ----
 @Composable
 fun TutorsListScreen(
     listaTutores: List<Usuario>,
