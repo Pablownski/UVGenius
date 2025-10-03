@@ -37,7 +37,7 @@ fun TutorCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .animateContentSize(), // Ajuste de altura suave por si el tutor da muchos cursos
+            .animateContentSize(), // Ajuste de altura por si el tutor da muchos cursos
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(

@@ -20,7 +20,7 @@ fun TutorsListScreen(
     modifier: Modifier = Modifier
 ) {
     Scaffold(
-        topBar = {},
+        topBar = { TopAppBar(navController, modifier)},
         bottomBar = { BottomNavBar(navController, modifier) }
     ) { paddingValues ->
         Column(
