@@ -9,15 +9,15 @@ import com.example.uvgenius.ViewModel.AppVM
 
 @Composable
 fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
-    NavHost(navController = navController, startDestination = Routes.LOGIN) {
-        composable(Routes.LOGIN.route) {
+    NavHost(navController = navController, startDestination = Routes.Login) {
+        composable(Routes.Login.route) {
             LoginScreen(onLogin = { u, p ->
                 if (viewModel.login(u, p)) {
-                    navController.navigate(Routes.HOME) { popUpTo(Routes.LOGIN) { inclusive = true } }
+                    navController.navigate(Routes.Home) { popUpTo(Routes.Login) { inclusive = true } }
                 }
             })
         }
-        composable(Routes.HOME.route) {
+        composable(Routes.Home.route) {
             HomeScreen(navController = navController, viewModel = viewModel)
         }
         /*
