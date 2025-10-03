@@ -3,11 +3,10 @@ package com.example.uvgenius.ViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.example.uvgenius.model.Usuario
 import java.time.LocalDate
 
-class AppVM : ViewModel() {
+class AppVM() {
     var usuarioLogeado by mutableStateOf<String?>(null)
         private set
 
