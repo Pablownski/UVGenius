@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,18 +13,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.uvgenius.model.Tutor
+import com.example.uvgenius.model.Usuario
 import androidx.compose.ui.tooling.preview.Preview
 
 
-val listaTutores = listOf(
-    Tutor("Juan", "Álgebra Lineal"),
-    Tutor("Diego", "Cálculo 2"),
-    Tutor("Santiago", "Plataformas Móviles"),
-    Tutor("Samuel", "Química"),
-    Tutor("Pablo", "Ciencias de la vida"),
-    Tutor("Daniel", "Cálculo 2")
-)
+
+
+val UserList = listOf(
+    Usuario("Juan", "Shampol07#", "Sistemas", listOf("Cálculo 2", "Física 3", "Plataformas Móviles"), "5514-2209", "sal24374@uvg.edu.gt", "R.drawable.cuchututor"),
+    Usuario ("Diego", "Municipal132", "Sistemas", listOf("Android", "C++ Pthreads"), "5555-5555", "diego@uvg.edu.gt", "R.drawable.cuchututor"),
+    Usuario("Santiago", "Corderito132", "Química", listOf("Química"), "5555-0000", "santi@uvg.edu.gt", "R.drawable.cuchututor"),
+    Usuario("Samuel", "Samu132", "Biología", listOf("Ciencias de la vida"), "5555-1111", "samu@uvg.edu.gt", "R.drawable.cuchututor"),
+    Usuario("Pablo", "Pablownski", "Marketing", listOf("Marketing Digital", "Cálculo para el mercadeo"), "5555-2222", "pablo@uvg.edu.gt", "R.drawable.cuchututor"),
+    Usuario("Daniel", "Danielson132", "Civil Arquitectonica", listOf("Pisos 1, Pisos Picados 3"), "5555-3333", "daniel@uvg.edu.gt", "R.drawable.cuchututor"),
+    Usuario("Juan", "Juanito057", "Bioquimica", listOf("Quimica 2", "FisicoQuimica"), "5555-4444", "juan@uvg.edu.gt", "R.drawable.cuchututor"),
+  )
 
 
 @Composable
@@ -62,7 +64,7 @@ fun TutorsListScreen() {
 }
 
 @Composable
-fun TutorCard(tutor: Tutor) {
+fun TutorCard(tutor: Usuario) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,7 +72,7 @@ fun TutorCard(tutor: Tutor) {
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Círculo verde
+
         Box(
             modifier = Modifier
                 .size(50.dp)
@@ -87,8 +89,8 @@ fun TutorCard(tutor: Tutor) {
         Spacer(modifier = Modifier.width(12.dp))
 
         Column {
-            Text(text = tutor.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(text = tutor.materia, fontSize = 14.sp)
+            Text(text = Usuario.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text(text = Usuario.cursos, fontSize = 14.sp)
         }
     }
 }

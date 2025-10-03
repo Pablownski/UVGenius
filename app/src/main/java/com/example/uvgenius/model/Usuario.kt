@@ -11,5 +11,5 @@ data class Usuario(
     var cursos: List<String>,
     val telefono: String,
     val email: String,
-    @DrawableRes val avatar: Int
+    @DrawableRes val avatar: String
 )
