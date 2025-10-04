@@ -13,7 +13,7 @@ import kotlin.collections.addAll
 class AppVM() {
     var usuarioLogeado by mutableStateOf<Usuario?>(null)
 
-    val userList = listOf(
+    var userList = mutableStateListOf(
         usuarioFrom(
             id = 1,
             nombre = "Juan",

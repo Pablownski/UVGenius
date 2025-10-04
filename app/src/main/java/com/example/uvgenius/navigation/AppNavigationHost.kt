@@ -32,5 +32,8 @@ fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
         composable(Routes.UserProfile.route) {
             UserProfileScreen(navController, viewModel)
         }
+        composable(Routes.Register.route) {
+            RegisterScreen(navController, viewModel)
+        }
     }
 }
