@@ -1,5 +1,7 @@
 package com.example.uvgenius.ui.screens
 
+import android.R.attr.label
+import android.R.attr.singleLine
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -90,7 +92,10 @@ fun TutorsListScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color.White,
                             unfocusedBorderColor = Color.White,
-                            focusedLabelColor = Color.White
+                            focusedLabelColor = Color.White,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor=Color.White
                         ),
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
@@ -109,7 +114,10 @@ fun TutorsListScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Color.White,
                             unfocusedBorderColor = Color.White,
-                            focusedLabelColor = Color.White
+                            focusedLabelColor = Color.White,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor=Color.White
                         ),
                         value = filterQuery,
                         onValueChange = { filterQuery = it },

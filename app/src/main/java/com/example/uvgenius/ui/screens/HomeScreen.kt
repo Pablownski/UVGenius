@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -18,6 +19,7 @@ import com.example.uvgenius.navigation.Routes
 import com.example.uvgenius.ui.components.BottomNavBar
 import com.example.uvgenius.ui.components.TopNavBar
 import com.example.uvgenius.ui.components.TutoriaCard
+import com.example.uvgenius.ui.theme.ContentDarkGray
 import com.example.uvgenius.ui.theme.PrimaryGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +37,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     if (user == null) return
 
     var showBottomSheet by remember { mutableStateOf(false) }
-
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var dia by remember { mutableStateOf("") }
     var horario by remember { mutableStateOf("") }
@@ -82,7 +84,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                 shape = RoundedCornerShape(6.dp)
             ) {
                 Text(
@@ -97,6 +99,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
         if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState,
                 containerColor = Color.White
             ) {
                 Column(
@@ -105,7 +108,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Nueva Tutoría", fontSize = 20.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    Text("Nueva Tutoría", fontSize = 20.sp, fontWeight = FontWeight.Bold)
 
                     Spacer(Modifier.height(16.dp))
 
@@ -114,6 +117,12 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         onValueChange = { dia = it },
                         label = { Text("Día (ej. Lunes)") },
                         singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryGreen,
+                            unfocusedBorderColor = ContentDarkGray,
+                            focusedLabelColor = PrimaryGreen,
+                            cursorColor = PrimaryGreen
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -124,6 +133,12 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         onValueChange = { horario = it },
                         label = { Text("Horario (ej. 11:00 - 13:00)") },
                         singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryGreen,
+                            unfocusedBorderColor = ContentDarkGray,
+                            focusedLabelColor = PrimaryGreen,
+                            cursorColor = PrimaryGreen
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -134,6 +149,12 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         onValueChange = { curso = it },
                         label = { Text("Curso") },
                         singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryGreen,
+                            unfocusedBorderColor = ContentDarkGray,
+                            focusedLabelColor = PrimaryGreen,
+                            cursorColor = PrimaryGreen
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -144,6 +165,12 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         onValueChange = { tutor = it },
                         label = { Text("Tutor") },
                         singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryGreen,
+                            unfocusedBorderColor = ContentDarkGray,
+                            focusedLabelColor = PrimaryGreen,
+                            cursorColor = PrimaryGreen
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -172,13 +199,17 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
                     ) {
-                        Text("Guardar", color = Color.White)
+                        Text("Guardar", color = Color.White, fontSize = 15.sp)
                     }
 
                     Spacer(Modifier.height(8.dp))
 
-                    TextButton(onClick = { showBottomSheet = false }) {
-                        Text("Cancelar", color = Color.Gray)
+                    TextButton(
+                        onClick = { showBottomSheet = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                    ) {
+                        Text(text = "Cancelar", color = Color.White, fontSize = 15.sp)
                     }
                 }
             }
