@@ -24,7 +24,7 @@ class AppVM() {
             telefono = "5514-2209",
             email = "sal24374@uvg.edu.gt",
             avatar = R.drawable.cuchututor,
-            descripcion = "Apasionado por Android y la docencia.",
+            descripcion = "El mejor profe de la UVG",
             horarios = "11:00 - 17:00"
         ),
         usuarioFrom(
@@ -37,7 +37,7 @@ class AppVM() {
             telefono = "5555-5555",
             email = "diego@uvg.edu.gt",
             avatar = R.drawable.cuchututor,
-            descripcion = "Me encanta la concurrencia y el café.",
+            descripcion = "Prueba.",
             horarios = "14:00 - 18:00"
         ),
         usuarioFrom(
@@ -63,7 +63,7 @@ class AppVM() {
             telefono = "5555-1111",
             email = "samu@uvg.edu.gt",
             avatar = R.drawable.cuchututor,
-            descripcion = "Bio + estadística aplicada.",
+            descripcion = "AAAA.",
             horarios = "10:00 - 16:00"
         ),
         usuarioFrom(
@@ -76,7 +76,7 @@ class AppVM() {
             telefono = "5555-2222",
             email = "pablo@uvg.edu.gt",
             avatar = R.drawable.cuchututor,
-            descripcion = "SEO + analítica para todos.",
+            descripcion = "Prueba.",
             horarios = "13:00 - 19:00"
         ),
         usuarioFrom(
@@ -89,7 +89,7 @@ class AppVM() {
             telefono = "5555-3333",
             email = "daniel@uvg.edu.gt",
             avatar = R.drawable.cuchututor,
-            descripcion = "Estructuras y dibujo técnico.",
+            descripcion = "Prueba.",
             horarios = "08:00 - 12:00"
         ),
         usuarioFrom(
@@ -102,7 +102,7 @@ class AppVM() {
             telefono = "5555-4444",
             email = "juan@uvg.edu.gt",
             avatar = R.drawable.cuchututor,
-            descripcion = "Bioquímica aplicada a medicina.",
+            descripcion = "Prueba.",
             horarios = "15:00 - 20:00"
         )
     )

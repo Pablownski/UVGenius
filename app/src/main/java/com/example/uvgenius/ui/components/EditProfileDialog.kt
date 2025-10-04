@@ -1,5 +1,6 @@
 package com.example.uvgenius.ui.components
 
+import android.R.attr.maxHeight
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Visibility
@@ -29,6 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -59,29 +64,43 @@ fun EditProfileDialog(
     var newCourse by remember { mutableStateOf("") }
     var cursos by remember { mutableStateOf(user.cursos.toList()) } // edit buffer
 
+    val scroll = rememberScrollState()
+    val maxHeight = (LocalWindowInfo.current.containerSize.height * 0.8).dp
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(
-                onClick = { onConfirm(password, carrera, cursos, telefono, email, descripcion, horarios) },
+            Button(
+                onClick = {
+                    onConfirm(
+                        password, carrera, cursos,
+                        telefono, email, descripcion, horarios
+                    )
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF1B5E20),
                     contentColor = Color.White
                 )
-            ){
-                Text("Confirmar")
-            }
+            ) { Text("Confirmar") }
         },
-        dismissButton = { TextButton(
-            onClick = onDismiss,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1B5E20),
-                contentColor = Color.White
-            )
-        ) { Text("Cancelar") } },
+        dismissButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1B5E20),
+                    contentColor = Color.White
+                )
+            ) { Text("Cancelar") }
+        },
         title = { Text("Editar perfil") },
         text = {
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = maxHeight)
+                    .verticalScroll(scroll),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -89,37 +108,60 @@ fun EditProfileDialog(
                     singleLine = true,
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
-                        // esconder contraseña
                         IconButton(onClick = { showPassword = !showPassword }) {
                             Icon(
-                                imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (showPassword) "Ocultar" else "Mostrar"
+                                imageVector = if (showPassword) Icons.Filled.Visibility
+                                else Icons.Filled.VisibilityOff,
+                                contentDescription = if (showPassword) "Ocultar" else "Mostrar",
+                                tint = Color.Black
                             )
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-                OutlinedTextField(carrera, { carrera = it }, label = { Text("Carrera") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+
+                OutlinedTextField(
+                    value = carrera,
+                    onValueChange = { carrera = it },
+                    label = { Text("Carrera") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Text("Cursos como tutor:")
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     cursos.forEach { c ->
                         AssistChip(
-                            onClick = { },
+                            onClick = { /* no-op */ },
                             label = { Text(c) },
                             trailingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
+                                    imageVector = Icons.Filled.Close,
                                     contentDescription = "Eliminar",
-                                    modifier = Modifier.size(16.dp).clickable { cursos = cursos - c },
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .clickable { cursos = cursos - c },
                                     tint = Color.Black
                                 )
                             }
                         )
                     }
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(newCourse, { newCourse = it }, label = { Text("Nuevo curso") }, singleLine = true, modifier = Modifier.weight(1f))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = newCourse,
+                        onValueChange = { newCourse = it },
+                        label = { Text("Nuevo curso") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
                     Button(
                         onClick = {
                             val t = newCourse.trim()
@@ -133,10 +175,38 @@ fun EditProfileDialog(
                     ) { Text("Añadir") }
                 }
 
-                OutlinedTextField(telefono, { telefono = it }, label = { Text("Teléfono") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(email, { email = it }, label = { Text("Email") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(descripcion, { descripcion = it }, label = { Text("Descripción") }, modifier = Modifier.fillMaxWidth().heightIn(min = 80.dp))
-                OutlinedTextField(horarios, { horarios = it }, label = { Text("Horarios disponibles (ej. 11:00 - 17:00)") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(
+                    value = telefono,
+                    onValueChange = { telefono = it },
+                    label = { Text("Teléfono") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = descripcion,
+                    onValueChange = { descripcion = it },
+                    label = { Text("Descripción") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 80.dp)
+                )
+
+                OutlinedTextField(
+                    value = horarios,
+                    onValueChange = { horarios = it },
+                    label = { Text("Horarios disponibles (ej. 11:00 - 17:00)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     )

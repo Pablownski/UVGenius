@@ -69,8 +69,10 @@ fun TutorsListScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             viewModel.userList.forEach { tutor ->
-                TutorCard(tutor)
-                Spacer(modifier = Modifier.height(8.dp))
+                if (tutor != viewModel.usuarioLogeado) {
+                    TutorCard(tutor)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
