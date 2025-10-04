@@ -1,6 +1,7 @@
 package com.example.uvgenius.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -70,10 +71,16 @@ fun TutorsListScreen(
 
             viewModel.userList.forEach { tutor ->
                 if (tutor != viewModel.usuarioLogeado) {
-                    TutorCard(tutor)
+                    TutorCard(
+                        tutor,
+                        modifier = Modifier.clickable {
+                            navController.navigate(Routes.TutorDetail.createRoute(tutor.id))
+                        }
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
+
         }
     }
 }

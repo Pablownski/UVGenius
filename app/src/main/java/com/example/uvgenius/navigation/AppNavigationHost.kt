@@ -18,10 +18,12 @@ fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
             HomeScreen(navController = navController, viewModel = viewModel)
         }
 
-        composable("${Routes.TutorDetail}/{id}") { backStack ->
-            val id = backStack.arguments?.getInt("id")
+        composable("${Routes.TutorDetail.route}/{id}") { backStack ->
+            val id = backStack.arguments?.getString("id")?.toIntOrNull()
             val tutor = viewModel.userList.find { it.id == id }
-            if (tutor != null) TutorDetailScreen(tutor, navController, viewModel)
+            if (tutor != null) {
+                TutorDetailScreen(tutor, navController, viewModel)
+            }
         }
 
         composable(Routes.TutorList.route) {
@@ -30,6 +32,5 @@ fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
         composable(Routes.UserProfile.route) {
             UserProfileScreen(navController, viewModel)
         }
-
     }
 }
