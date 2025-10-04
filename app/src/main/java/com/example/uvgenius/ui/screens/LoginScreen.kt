@@ -118,11 +118,25 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(
-                        "¿Perdiste tu contraseña?\n¿No tienes cuenta? Regístrate",
-                        fontSize = 14.sp,
-                        color = Color.DarkGray
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "¿Olvidaste tu contraseña?",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray,
+                        )
+                        Text(
+                            "¿No tienes cuenta? Regístrate",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray,
+                            modifier = Modifier.clickable {
+                                navController.navigate(Routes.Register.route)
+                            }
+                        )
+                    }
                 }
             }
         }
