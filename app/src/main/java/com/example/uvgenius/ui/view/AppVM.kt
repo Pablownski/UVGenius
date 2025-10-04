@@ -130,8 +130,8 @@ class AppVM() {
         telefono: String,
         email: String,
         avatar: Int,
-        descripcion: String = "",
-        horarios: String = ""
+        descripcion: String,
+        horarios: String
     ): Usuario {
         return Usuario(
             id = id,
