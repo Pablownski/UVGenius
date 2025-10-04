@@ -3,16 +3,19 @@ package com.example.uvgenius.model
 
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 data class Usuario (
-    val id: Int,
-    val nombre: String,
-    val password: String,
-    val carrera: String,
-    var cursos: List<String>,
-    var tutorias: List<Tutoria>,
-    val telefono: String,
-    val email: String,
+    var id: Int,
+    var nombre: String,
+    var password: String,
+    var carrera: String,
+    var cursos: SnapshotStateList<String>,
+    var tutorias: SnapshotStateList<Tutoria>,
+    var telefono: String,
+    var email: String,
+    var descripcion: String,
+    var horarios: String,
     @DrawableRes
-    val avatar: Int
+    var avatar: Int
 )

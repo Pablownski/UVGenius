@@ -30,7 +30,7 @@ fun TutoriaCard(tutoria: Tutoria) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${tutoria.horario} ${tutoria.curso} con ${tutoria.tutor}",
+                text = "${tutoria.curso} a las ${tutoria.horario} con ${tutoria.tutor}",
                 fontSize = 16.sp
             )
         }

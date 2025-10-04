@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,8 +64,8 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                     item{
                         Text(
                             "Lista aquí las tutorías que hayas agendado con el botón inferior!",
-                            fontSize = 18.sp,
-                            color = Color.Gray
+                            fontSize = 24.sp,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 } else {
@@ -76,7 +77,6 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
 
             Button(
                 onClick = {},// TODO: Agregar modal bottom sheet
