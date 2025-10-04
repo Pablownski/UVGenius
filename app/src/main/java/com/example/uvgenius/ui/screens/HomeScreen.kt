@@ -63,7 +63,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                 if (userTutorias.isEmpty()){
                     item{
                         Text(
-                            "Lista aquí las tutorías que hayas agendado con el botón inferior!",
+                            "No tienes tutorias programadas",
                             fontSize = 24.sp,
                             color = MaterialTheme.colorScheme.primary
                         )

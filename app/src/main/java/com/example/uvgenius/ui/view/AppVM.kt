@@ -104,7 +104,20 @@ class AppVM() {
             avatar = R.drawable.cuchututor,
             descripcion = "Prueba.",
             horarios = "15:00 - 20:00"
-        )
+        ),
+        usuarioFrom(
+            id = 0,
+            nombre = "Debug",
+            password = "a",
+            carrera = "Sistemas",
+            cursos = listOf("Cálculo 2", "Física 3", "Plataformas Móviles", "Ecuaciones Diferenciales"),
+            tutorias = emptyList(),
+            telefono = "5514-2209",
+            email = "a",
+            avatar = R.drawable.cuchututor,
+            descripcion = "El mejor profe de la UVG",
+            horarios = "11:00 - 17:00"
+        ),
     )
 
     fun usuarioFrom(

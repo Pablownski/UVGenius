@@ -65,30 +65,27 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
                 .background(Color(0xFF388E3C))
         ) {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.fondouvg),
-                    contentDescription = "Fondo UVG",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
 
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter
             ) {
 
+                Image(
+                    painter = painterResource(id = R.drawable.fondouvg),
+                    contentDescription = "Fondo UVG",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                        .offset(y = 70.dp),
+                        .align(Alignment.TopCenter)
+                        .padding(top = 220.dp, start = 16.dp, end = 16.dp), // inicia después del banner
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(6.dp)
@@ -109,7 +106,6 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -117,8 +113,7 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
                                 .padding(12.dp)
                         ) {
                             Text(
-                                if (usuario.descripcion.isBlank()) "Sin descripción disponible"
-                                else usuario.descripcion,
+                                if (usuario.descripcion.isBlank()) "Sin descripción disponible" else usuario.descripcion,
                                 fontSize = 14.sp,
                                 color = Color.Black
                             )
@@ -126,7 +121,6 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Info
                         InfoRow(R.drawable.ic_school, listOf(usuario.carrera))
                         Spacer(Modifier.height(12.dp))
                         InfoRow(
@@ -140,19 +134,22 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
                         InfoRow(R.drawable.ic_calendar, listOf("Horarios Disponibles: ${usuario.horarios}"))
                     }
                 }
-
-                Image(
-                    painter = painterResource(id = usuario.avatar),
-                    contentDescription = "Foto de tutor",
-                    modifier = Modifier
-                        .size(140.dp)
-                        .clip(CircleShape)
-                        .border(4.dp, Color(0xFF2E7D32), CircleShape)
-                        .align(Alignment.TopCenter)
-                        .offset(y = (-5).dp),
-                    contentScale = ContentScale.Crop
-                )
-
+                Row (
+                    modifier = Modifier.padding(top = 115.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Image(
+                        painter = painterResource(id = usuario.avatar),
+                        contentDescription = "Foto de tutor",
+                        modifier = Modifier
+                            .size(170.dp)
+                            .clip(CircleShape)
+                            .border(4.dp, Color(0xFF2E7D32), CircleShape)
+                            .offset(y = (0).dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
 
             }
         }
