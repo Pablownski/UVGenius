@@ -4,16 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,11 +18,11 @@ import com.example.uvgenius.navigation.Routes
 import com.example.uvgenius.ui.components.BottomNavBar
 import com.example.uvgenius.ui.components.TopNavBar
 import com.example.uvgenius.ui.components.TutoriaCard
+import com.example.uvgenius.ui.theme.PrimaryGreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
-
     val user = viewModel.usuarioLogeado
     LaunchedEffect(user) {
         if (user == null) {
@@ -40,14 +32,21 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
             }
         }
     }
-    if (user == null) {
-        return
-    }
-    Scaffold (
+    if (user == null) return
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+
+    var dia by remember { mutableStateOf("") }
+    var horario by remember { mutableStateOf("") }
+    var curso by remember { mutableStateOf("") }
+    var tutor by remember { mutableStateOf( "") }
+
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = { BottomNavBar(navController) },
         topBar = { TopNavBar(onLogout = { viewModel.logout() }) },
-    ) {innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -60,10 +59,10 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                 modifier = Modifier.weight(1f)
             ) {
                 val userTutorias = viewModel.usuarioLogeado!!.tutorias
-                if (userTutorias.isEmpty()){
-                    item{
+                if (userTutorias.isEmpty()) {
+                    item {
                         Text(
-                            "No tienes tutorias programadas",
+                            "No tienes tutorías programadas",
                             fontSize = 24.sp,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -71,21 +70,19 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                 } else {
                     items(userTutorias) { tutoria ->
                         TutoriaCard(tutoria)
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
-
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = {},// TODO: Agregar modal bottom sheet
+                onClick = { showBottomSheet = true },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF1B5E20) // verde oscuro
-                ),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
                 shape = RoundedCornerShape(6.dp)
             ) {
                 Text(
@@ -93,6 +90,97 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                     color = Color.White,
                     fontSize = 16.sp
                 )
+            }
+        }
+
+
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                containerColor = Color.White
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Nueva Tutoría", fontSize = 20.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+
+                    Spacer(Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = dia,
+                        onValueChange = { dia = it },
+                        label = { Text("Día (ej. Lunes)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = horario,
+                        onValueChange = { horario = it },
+                        label = { Text("Horario (ej. 11:00 - 13:00)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = curso,
+                        onValueChange = { curso = it },
+                        label = { Text("Curso") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = tutor,
+                        onValueChange = { tutor = it },
+                        label = { Text("Tutor") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Button(
+                        onClick = {
+                            if (dia.isNotBlank() && horario.isNotBlank() && curso.isNotBlank()) {
+                                val nuevaTutoria = Tutoria(
+                                    dia = dia,
+                                    horario = horario,
+                                    curso = curso,
+                                    tutor = tutor
+                                )
+                                user.tutorias.add(nuevaTutoria)
+
+
+                                dia = ""
+                                horario = ""
+                                curso = ""
+                                tutor = ""
+
+                                showBottomSheet = false
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                    ) {
+                        Text("Guardar", color = Color.White)
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    TextButton(onClick = { showBottomSheet = false }) {
+                        Text("Cancelar", color = Color.Gray)
+                    }
+                }
             }
         }
     }

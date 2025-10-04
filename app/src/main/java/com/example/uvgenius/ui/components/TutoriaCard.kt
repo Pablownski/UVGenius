@@ -26,12 +26,14 @@ fun TutoriaCard(tutoria: Tutoria) {
             Text(
                 text = "${tutoria.dia}:",
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
+                fontSize = 18.sp,
+                color = Color.Black
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "${tutoria.curso} a las ${tutoria.horario} con ${tutoria.tutor}",
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                color = Color.Black
             )
         }
     }
