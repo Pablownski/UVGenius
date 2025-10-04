@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,6 +39,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.uvgenius.model.Usuario
+import com.example.uvgenius.ui.theme.ContentDarkGray
+import com.example.uvgenius.ui.theme.PrimaryGreen
 
 @Composable
 fun EditProfileDialog(
@@ -106,6 +109,12 @@ fun EditProfileDialog(
                     onValueChange = { password = it },
                     label = { Text("Contraseña") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = ContentDarkGray,
+                        focusedLabelColor = PrimaryGreen,
+                        cursorColor = PrimaryGreen
+                    ),
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = { showPassword = !showPassword }) {
@@ -125,6 +134,12 @@ fun EditProfileDialog(
                     onValueChange = { carrera = it },
                     label = { Text("Carrera") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = ContentDarkGray,
+                        focusedLabelColor = PrimaryGreen,
+                        cursorColor = PrimaryGreen
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -160,6 +175,12 @@ fun EditProfileDialog(
                         onValueChange = { newCourse = it },
                         label = { Text("Nuevo curso") },
                         singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryGreen,
+                            unfocusedBorderColor = ContentDarkGray,
+                            focusedLabelColor = PrimaryGreen,
+                            cursorColor = PrimaryGreen
+                        ),
                         modifier = Modifier.weight(1f)
                     )
                     Button(
@@ -180,6 +201,12 @@ fun EditProfileDialog(
                     onValueChange = { telefono = it },
                     label = { Text("Teléfono") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = ContentDarkGray,
+                        focusedLabelColor = PrimaryGreen,
+                        cursorColor = PrimaryGreen
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -188,11 +215,23 @@ fun EditProfileDialog(
                     onValueChange = { email = it },
                     label = { Text("Email") },
                     singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = ContentDarkGray,
+                        focusedLabelColor = PrimaryGreen,
+                        cursorColor = PrimaryGreen
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 OutlinedTextField(
                     value = descripcion,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = ContentDarkGray,
+                        focusedLabelColor = PrimaryGreen,
+                        cursorColor = PrimaryGreen
+                    ),
                     onValueChange = { descripcion = it },
                     label = { Text("Descripción") },
                     modifier = Modifier
@@ -202,10 +241,17 @@ fun EditProfileDialog(
 
                 OutlinedTextField(
                     value = horarios,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = ContentDarkGray,
+                        focusedLabelColor = PrimaryGreen,
+                        cursorColor = PrimaryGreen
+                    ),
                     onValueChange = { horarios = it },
                     label = { Text("Horarios disponibles (ej. 11:00 - 17:00)") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+
                 )
             }
         }
