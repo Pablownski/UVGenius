@@ -64,7 +64,7 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
                 .padding(innerPadding)
                 .background(Color(0xFF388E3C))
         ) {
-            // Banner
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,12 +78,12 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
                 )
             }
 
-            // Contenedor general
+
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter
             ) {
-                // Card blanca
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -99,7 +99,7 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
                             .padding(top = 80.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Nombre debajo del avatar
+
                         Text(
                             text = usuario.nombre,
                             fontSize = 22.sp,
@@ -109,7 +109,7 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Descripción
+
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()

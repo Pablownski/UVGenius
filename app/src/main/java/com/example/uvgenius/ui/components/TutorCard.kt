@@ -38,7 +38,7 @@ fun TutorCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .animateContentSize(), // Ajuste de altura por si el tutor da muchos cursos
+            .animateContentSize(),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
@@ -47,7 +47,7 @@ fun TutorCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar circular
+
             Box(
                 modifier = Modifier
                     .size(50.dp)
