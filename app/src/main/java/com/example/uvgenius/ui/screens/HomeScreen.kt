@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.uvgenius.ui.view.AppVM
 import com.example.uvgenius.model.Tutoria
@@ -26,6 +27,7 @@ import com.example.uvgenius.ui.theme.PrimaryGreen
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     val user = viewModel.usuarioLogeado
+    val uiState = viewModel.homeUiState.collectAsStateWithLifecycle().value
     LaunchedEffect(user) {
         if (user == null) {
             navController.navigate(Routes.Login.route) {
@@ -42,7 +44,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     var dia by remember { mutableStateOf("") }
     var horario by remember { mutableStateOf("") }
     var curso by remember { mutableStateOf("") }
-    var tutor by remember { mutableStateOf( "") }
+    var tutor by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -56,12 +58,19 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if (uiState.isLoading) {
+                CircularProgressIndicator()
+                Spacer(Modifier.height(8.dp))
+            }
+            uiState.error?.let {
+                Text(it, color = MaterialTheme.colorScheme.error)
+                Spacer(Modifier.height(8.dp))
+            }
 
             LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
-                val userTutorias = viewModel.usuarioLogeado!!.tutorias
-                if (userTutorias.isEmpty()) {
+                if (uiState.tutorias.isEmpty()) {
                     item {
                         Text(
                             "No tienes tutorías programadas",
@@ -70,20 +79,31 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         )
                     }
                 } else {
-                    items(userTutorias) { tutoria ->
+                    items(uiState.tutorias) { tutoria ->
                         TutoriaCard(tutoria)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Button(onClick = { navController.navigate("fakeTutoria") }) {
-                Text("Probar Async Fake Repo",
-                    color = Color.Black,
-                    fontSize = 16.sp)
+            Button(
+                onClick = {viewModel.cargarTutorias()},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                shape = RoundedCornerShape(6.dp)
+            ) {
+                Text(
+                    text = "Cargar tutorías",
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = { showBottomSheet = true },
@@ -101,7 +121,6 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
             }
         }
 
-
         if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false },
@@ -114,7 +133,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Nueva Tutoría", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text("Nueva Tutoría", fontSize = 20.sp)
 
                     Spacer(Modifier.height(16.dp))
 
@@ -185,20 +204,10 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                     Button(
                         onClick = {
                             if (dia.isNotBlank() && horario.isNotBlank() && curso.isNotBlank()) {
-                                val nuevaTutoria = Tutoria(
-                                    dia = dia,
-                                    horario = horario,
-                                    curso = curso,
-                                    tutor = tutor
-                                )
-                                user.tutorias.add(nuevaTutoria)
-
-
-                                dia = ""
-                                horario = ""
-                                curso = ""
-                                tutor = ""
-
+                                val nueva = Tutoria(dia = dia, horario = horario, curso = curso, tutor = tutor)
+                                val actuales = uiState.tutorias.toMutableList()
+                                actuales.add(nueva)
+                                val merged = actuales.toList()
                                 showBottomSheet = false
                             }
                         },

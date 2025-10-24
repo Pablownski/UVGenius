@@ -1,17 +1,30 @@
 package com.example.uvgenius.ui.view
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import com.example.uvgenius.model.Usuario
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.uvgenius.R
+import com.example.uvgenius.data.FakeRepository
+import com.example.uvgenius.model.HomeUiState
 import com.example.uvgenius.model.Tutoria
-import kotlin.collections.addAll
+import com.example.uvgenius.model.Usuario
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-// para copiar rapido y hacer pruebas: sal24374@uvg.edu.gt Shampol07#
-class AppVM() {
+class AppVM(
+    private val repo: FakeRepository = FakeRepository()
+) : ViewModel() {
+
     var usuarioLogeado by mutableStateOf<Usuario?>(null)
+
+    private val _homeUiState = MutableStateFlow(HomeUiState())
+    val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
 
     var userList = mutableStateListOf(
         usuarioFrom(
@@ -120,6 +133,73 @@ class AppVM() {
         ),
     )
 
+    fun cargarTutorias() {
+        viewModelScope.launch {
+            _homeUiState.update { it.copy(isLoading = true, error = null) }
+            repo.getTutorias().collect { result ->
+                result.onSuccess { lista ->
+                    _homeUiState.update { it.copy(isLoading = false, tutorias = lista, error = null) }
+                    usuarioLogeado?.let { u ->
+                        u.tutorias.clear()
+                        u.tutorias.addAll(lista)
+                    }
+                }.onFailure { e ->
+                    _homeUiState.update { it.copy(isLoading = false, error = e.message) }
+                }
+            }
+        }
+    }
+
+    fun updateUsuarioLogeado(
+        password: String,
+        carrera: String,
+        cursos: List<String>,
+        telefono: String,
+        email: String,
+        descripcion: String,
+        horarios: String,
+        avatar: Int? = null
+    ) {
+        usuarioLogeado?.let { u ->
+            u.password = password
+            u.carrera = carrera
+            u.cursos.apply {
+                clear()
+                addAll(cursos)
+            }
+            u.telefono = telefono
+            u.email = email
+            if (avatar != null) u.avatar = avatar
+            u.descripcion = descripcion
+            u.horarios = horarios
+            usuarioLogeado = u
+        }
+    }
+
+    fun login(mail: String, pass: String){
+        for (u: Usuario in userList) {
+            if (u.email == mail && u.password == pass) {
+                usuarioLogeado = u
+            }
+        }
+    }
+
+    fun logout(){
+        usuarioLogeado = null
+        _homeUiState.update { HomeUiState() }
+    }
+
+    fun checkLogin(mail: String, pass: String): Boolean {
+        for (u: Usuario in userList) {
+            if (u.email == mail && u.password == pass) {
+                usuarioLogeado = u
+                return true
+            }
+        }
+        return false
+    }
+
+
     fun usuarioFrom(
         id: Int,
         nombre: String,
@@ -141,61 +221,9 @@ class AppVM() {
             cursos = mutableStateListOf<String>().also { it.addAll(cursos) },
             tutorias = mutableStateListOf<Tutoria>().also { it.addAll(tutorias) },
             telefono = telefono,
-            email = email,
-            avatar = avatar,
+            email = email, avatar = avatar,
             descripcion = descripcion,
             horarios = horarios
         )
-    }
-
-    fun updateUsuarioLogeado(
-        password: String,
-        carrera: String,
-        cursos: List<String>,
-        telefono: String,
-        email: String,
-        descripcion: String,
-        horarios: String,
-        avatar: Int? = null
-    ) {
-        usuarioLogeado?.let { u ->
-            u.password = password
-            u.carrera = carrera
-
-            u.cursos.apply {
-                clear()
-                addAll(cursos)
-            }
-
-            u.telefono = telefono
-            u.email = email
-            if (avatar != null) u.avatar = avatar
-            u.descripcion = descripcion
-            u.horarios = horarios
-
-            usuarioLogeado = u
-        }
-    }
-
-    fun login(mail: String, pass: String){
-        for (u : Usuario in userList) {
-            if (u.email == mail && u.password == pass) {
-                usuarioLogeado = u
-            }
-        }
-    }
-
-    fun logout(){
-        usuarioLogeado = null
-    }
-
-    fun checkLogin(mail: String, pass: String): Boolean {
-        for (u : Usuario in userList) {
-            if (u.email == mail && u.password == pass) {
-                usuarioLogeado = u
-                return true
-            }
-        }
-        return false
     }
 }
