@@ -138,16 +138,23 @@ class AppVM(
             _homeUiState.update { it.copy(isLoading = true, error = null) }
             repo.getTutorias().collect { result ->
                 result.onSuccess { lista ->
-                    _homeUiState.update { it.copy(isLoading = false, tutorias = lista, error = null) }
-                    usuarioLogeado?.let { u ->
-                        u.tutorias.clear()
-                        u.tutorias.addAll(lista)
+                    for (t in lista) {
+                        if (t !in usuarioLogeado!!.tutorias) usuarioLogeado!!.tutorias.add(t)
                     }
+                    _homeUiState.update { it.copy(isLoading = false, tutorias = usuarioLogeado!!.tutorias, error = null) }
                 }.onFailure { e ->
                     _homeUiState.update { it.copy(isLoading = false, error = e.message) }
                 }
             }
         }
+    }
+
+    fun agregarTutoria(nueva: Tutoria) {
+        _homeUiState.update { current ->
+            current.copy(tutorias = current.tutorias + nueva)
+        }
+
+        usuarioLogeado?.tutorias?.add(nueva)
     }
 
     fun updateUsuarioLogeado(

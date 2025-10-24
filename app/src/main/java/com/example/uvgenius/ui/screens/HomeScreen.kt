@@ -205,9 +205,9 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                         onClick = {
                             if (dia.isNotBlank() && horario.isNotBlank() && curso.isNotBlank()) {
                                 val nueva = Tutoria(dia = dia, horario = horario, curso = curso, tutor = tutor)
-                                val actuales = uiState.tutorias.toMutableList()
-                                actuales.add(nueva)
-                                val merged = actuales.toList()
+                                if (!uiState.isLoading){
+                                    viewModel.agregarTutoria(nueva)
+                                }
                                 showBottomSheet = false
                             }
                         },
