@@ -35,5 +35,9 @@ fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
         composable(Routes.Register.route) {
             RegisterScreen(navController, viewModel)
         }
+        composable("fakeTutoria") {
+            FakeScreen(navController = navController)
+        }
+
     }
 }

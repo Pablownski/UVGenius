@@ -79,6 +79,12 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            Button(onClick = { navController.navigate("fakeTutoria") }) {
+                Text("Probar Async Fake Repo",
+                    color = Color.Black,
+                    fontSize = 16.sp)
+            }
+
             Button(
                 onClick = { showBottomSheet = true },
                 modifier = Modifier
