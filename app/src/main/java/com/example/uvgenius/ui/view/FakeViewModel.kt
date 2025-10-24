@@ -23,7 +23,7 @@ class FakeTutoriaViewModel(
 
     fun cargarTutorias() {
         viewModelScope.launch {
-            // Reinicia el estado para limpiar mensajes anteriores
+
             _uiState.value = FakeTutoriaUIState.Loading
 
             repository.getTutorias().collect { result ->
@@ -31,7 +31,7 @@ class FakeTutoriaViewModel(
                     if (data.isNotEmpty()) {
                         _uiState.value = FakeTutoriaUIState.Success(data)
                     } else {
-                        // Si viene vacía, trátala como error
+
                         _uiState.value = FakeTutoriaUIState.Error("No se encontraron tutorías.")
                     }
                 }.onFailure { e ->

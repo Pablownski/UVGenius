@@ -71,7 +71,7 @@ fun FakeScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(onClick = { fakeTutoriaViewModel.cargarTutorias() }) {
-                            Text("Reintentar")
+                            Text(text= "Reintentar", color = MaterialTheme.colorScheme.tertiary)
                         }
                     }
                 }

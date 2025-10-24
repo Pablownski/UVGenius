@@ -7,4 +7,5 @@ val PrimaryGreen = Color(0xFF004207)
 val ContentGray = Color(0xFFD0CBCB)
 val ContentWhite = Color(0xFFFFFFFF)
 
+val ContentBlack = Color(0xFF000000)
 val ContentDarkGray = Color(0xFF808080)
