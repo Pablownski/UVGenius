@@ -14,9 +14,6 @@ import kotlinx.coroutines.launch
 
 class AppVM : ViewModel() {
 
-    // ----------------------------
-    // 🔹 LOGIN Y USUARIOS
-    // ----------------------------
     var userList = mutableStateListOf<Usuario>()
     var usuarioLogeado: Usuario? = null
 
@@ -90,16 +87,11 @@ class AppVM : ViewModel() {
         usuarioLogeado = null
     }
 
-    // ----------------------------
-    // 🔹 HOME SCREEN (TUTORÍAS)
-    // ----------------------------
 
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState = _homeUiState.asStateFlow()
 
-    /**
-     * Carga las tutorías del usuario logueado (localmente por ahora)
-     */
+
     fun cargarTutorias() {
 
         viewModelScope.launch {
@@ -117,8 +109,6 @@ class AppVM : ViewModel() {
                     return@launch
 
                 }
-
-
 
                 // Obtener las tutorías más recientes desde Firebase
 
@@ -218,6 +208,7 @@ class AppVM : ViewModel() {
     }
 
     fun updateUsuarioLogeado(
+        nombre: String,
         password: String,
         carrera: String,
         cursos: List<String>,
@@ -226,15 +217,41 @@ class AppVM : ViewModel() {
         descripcion: String,
         horarios: String
     ) {
-        usuarioLogeado?.let {
-            it.password = password
-            it.carrera = carrera
-            it.cursos.clear()
-            it.cursos.addAll(cursos)
-            it.telefono = telefono
-            it.email = email
-            it.descripcion = descripcion
-            it.horarios = horarios
+        val usuario = usuarioLogeado ?: return
+
+        usuario.nombre = nombre
+        usuario.password = password
+        usuario.carrera = carrera
+        usuario.cursos.clear()
+        usuario.cursos.addAll(cursos)
+        usuario.telefono = telefono
+        usuario.email = email
+        usuario.descripcion = descripcion
+        usuario.horarios = horarios
+
+        // Actualizar en Firebase
+        val ref = db.getReference("usuarios/${usuario.id}")
+        val userMap = mapOf(
+            "id" to usuario.id,
+            "nombre" to usuario.nombre,
+            "password" to usuario.password,
+            "carrera" to usuario.carrera,
+            "cursos" to usuario.cursos.toList(),
+            "tutorias" to usuario.tutorias.toList(),
+            "telefono" to usuario.telefono,
+            "email" to usuario.email,
+            "descripcion" to usuario.descripcion,
+            "horarios" to usuario.horarios,
+            "avatar" to "cuchututor"
+        )
+
+        ref.updateChildren(userMap)
+            .addOnSuccessListener {
+                Log.d("Firebase", "Perfil actualizado correctamente en la base de datos.")
             }
-        }
+            .addOnFailureListener {
+                Log.e("Firebase", "Error al actualizar perfil: ${it.message}")
+            }
+    }
+
 }

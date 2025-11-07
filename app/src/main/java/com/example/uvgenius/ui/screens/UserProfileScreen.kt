@@ -156,8 +156,9 @@ fun UserProfileScreen(
         EditProfileDialog(
             user = user,
             onDismiss = { showEdit = false },
-            onConfirm = { password, carrera, cursos, telefono, email, descripcion, horarios ->
+            onConfirm = { nombre, password, carrera, cursos, telefono, email, descripcion, horarios ->
                 viewModel.updateUsuarioLogeado(
+                    nombre = nombre,
                     password = password,
                     carrera = carrera,
                     cursos = cursos,

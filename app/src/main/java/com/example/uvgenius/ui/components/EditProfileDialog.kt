@@ -47,6 +47,7 @@ fun EditProfileDialog(
     user: Usuario,
     onDismiss: () -> Unit,
     onConfirm: (
+        nombre: String,
         password: String,
         carrera: String,
         cursos: List<String>,
@@ -56,6 +57,7 @@ fun EditProfileDialog(
         horarios: String
     ) -> Unit
 ) {
+    var nombre by remember { mutableStateOf(user.nombre) }
     var password by remember { mutableStateOf(user.password) }
     var showPassword by remember { mutableStateOf(false) }
     var carrera by remember { mutableStateOf(user.carrera) }
@@ -76,7 +78,7 @@ fun EditProfileDialog(
             Button(
                 onClick = {
                     onConfirm(
-                        password, carrera, cursos,
+                        nombre, password, carrera, cursos,
                         telefono, email, descripcion, horarios
                     )
                 },
@@ -104,6 +106,20 @@ fun EditProfileDialog(
                     .verticalScroll(scroll),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                OutlinedTextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("Nombre") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = ContentDarkGray,
+                        focusedLabelColor = PrimaryGreen,
+                        cursorColor = PrimaryGreen
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
