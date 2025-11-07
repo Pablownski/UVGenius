@@ -97,63 +97,36 @@ class AppVM : ViewModel() {
         viewModelScope.launch {
 
             _homeUiState.value = HomeUiState(isLoading = true)
-
             try {
-
                 val usuario = usuarioLogeado
 
                 if (usuario == null) {
-
                     _homeUiState.value = HomeUiState(error = "Usuario no logueado")
-
                     return@launch
-
                 }
 
                 // Obtener las tutorías más recientes desde Firebase
-
                 val ref = db.getReference("usuarios/${usuario.id}/tutorias")
-
                 ref.get().addOnSuccessListener { snapshot ->
-
                     val nuevasTutorias = snapshot.children.mapNotNull {
-
                         val dia = it.child("dia").getValue(String::class.java) ?: return@mapNotNull null
-
                         val horario = it.child("horario").getValue(String::class.java) ?: return@mapNotNull null
-
                         val curso = it.child("curso").getValue(String::class.java) ?: return@mapNotNull null
-
                         val tutor = it.child("tutor").getValue(String::class.java) ?: return@mapNotNull null
-
                         Tutoria(dia, horario, curso, tutor)
-
                     }
 
-
-
                     usuario.tutorias.clear()
-
                     usuario.tutorias.addAll(nuevasTutorias)
-
-
-
                     _homeUiState.value = HomeUiState(isLoading = false, tutorias = nuevasTutorias)
-
                 }.addOnFailureListener {
-
                     _homeUiState.value = HomeUiState(error = "Error al leer tutorías")
-
                 }
 
             } catch (e: Exception) {
-
                 _homeUiState.value = HomeUiState(isLoading = false, error = e.message)
-
                 }
-
-            }
-
+        }
     }
 
     fun agregarTutoria(nueva: Tutoria) {
@@ -253,5 +226,39 @@ class AppVM : ViewModel() {
                 Log.e("Firebase", "Error al actualizar perfil: ${it.message}")
             }
     }
+
+    fun registrarUsuario(usuario: Usuario, onComplete: (() -> Unit)? = null) {
+        try {
+            val ref = db.getReference("usuarios/${usuario.id}")
+            val userMap = mapOf(
+                "id" to usuario.id,
+                "nombre" to usuario.nombre,
+                "password" to usuario.password,
+                "carrera" to usuario.carrera,
+                "cursos" to usuario.cursos.toList(),
+                "tutorias" to usuario.tutorias.toList(),
+                "telefono" to usuario.telefono,
+                "email" to usuario.email,
+                "descripcion" to usuario.descripcion,
+                "horarios" to usuario.horarios,
+                "avatar" to "cuchututor"
+            )
+
+            ref.setValue(userMap)
+                .addOnSuccessListener {
+                    Log.d("Firebase", "Usuario creado correctamente en la base de datos.")
+                    // Agregar a la lista local también
+                    userList.add(usuario)
+                    onComplete?.invoke()
+                }
+                .addOnFailureListener {
+                    Log.e("Firebase", "Error al registrar usuario: ${it.message}")
+                }
+
+        } catch (e: Exception) {
+            Log.e("Firebase", "Error en registrarUsuario: ${e.message}")
+        }
+    }
+
 
 }

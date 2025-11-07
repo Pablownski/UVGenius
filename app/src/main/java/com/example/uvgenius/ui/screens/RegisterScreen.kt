@@ -155,7 +155,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                             } else {
                                 error = false
                                 val nuevoUsuario = Usuario(
-                                    id = Random.nextInt(1000, 9999),
+                                    id = Random.nextInt(10, 999999),
                                     nombre = nombre,
                                     password = password,
                                     carrera = carrera,
@@ -168,13 +168,15 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                                     avatar = R.drawable.cuchututor
                                 )
 
-                                viewModel.userList.add(nuevoUsuario)
-
-                                navController.navigate(Routes.Login.route) {
-                                    popUpTo(Routes.Register.route) { inclusive = true }
+                                // Registrar en Firebase y agregar a lista local
+                                viewModel.registrarUsuario(nuevoUsuario) {
+                                    navController.navigate(Routes.Login.route) {
+                                        popUpTo(Routes.Register.route) { inclusive = true }
+                                    }
                                 }
                             }
                         },
+
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
