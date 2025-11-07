@@ -28,6 +28,7 @@ import com.example.uvgenius.ui.theme.PrimaryGreen
 fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     val user = viewModel.usuarioLogeado
     val uiState = viewModel.homeUiState.collectAsStateWithLifecycle().value
+
     LaunchedEffect(user) {
         if (user == null) {
             navController.navigate(Routes.Login.route) {
@@ -37,6 +38,9 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
         }
     }
     if (user == null) return
+    LaunchedEffect(Unit) {
+        viewModel.cargarTutorias()
+    }
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -80,7 +84,10 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                     }
                 } else {
                     items(uiState.tutorias) { tutoria ->
-                        TutoriaCard(tutoria)
+                        TutoriaCard(
+                            tutoria = tutoria,
+                            onDelete = { viewModel.eliminarTutoria(tutoria) }
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
@@ -88,22 +95,6 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = {viewModel.cargarTutorias()},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
-                shape = RoundedCornerShape(6.dp)
-            ) {
-                Text(
-                    text = "Cargar tutorías",
-                    color = Color.White,
-                    fontSize = 16.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = { showBottomSheet = true },

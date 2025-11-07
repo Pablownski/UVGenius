@@ -1,160 +1,220 @@
 package com.example.uvgenius.ui.view
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.uvgenius.R
-import com.example.uvgenius.data.FakeRepository
-import com.example.uvgenius.model.HomeUiState
-import com.example.uvgenius.model.Tutoria
-import com.example.uvgenius.model.Usuario
+import com.example.uvgenius.model.*
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AppVM(
-    private val repo: FakeRepository = FakeRepository()
-) : ViewModel() {
+class AppVM : ViewModel() {
 
-    var usuarioLogeado by mutableStateOf<Usuario?>(null)
+    // ----------------------------
+    // 🔹 LOGIN Y USUARIOS
+    // ----------------------------
+    var userList = mutableStateListOf<Usuario>()
+    var usuarioLogeado: Usuario? = null
 
-    private val _homeUiState = MutableStateFlow(HomeUiState())
-    val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
+    private val db = FirebaseDatabase.getInstance()
+    private val refUsuarios = db.getReference("usuarios")
 
-    var userList = mutableStateListOf(
-        usuarioFrom(
-            id = 1,
-            nombre = "Juan",
-            password = "Shampol07#",
-            carrera = "Sistemas",
-            cursos = listOf("Cálculo 2", "Física 3", "Plataformas Móviles", "Ecuaciones Diferenciales"),
-            tutorias = emptyList(),
-            telefono = "5514-2209",
-            email = "sal24374@uvg.edu.gt",
-            avatar = R.drawable.cuchututor,
-            descripcion = "El mejor profe de la UVG",
-            horarios = "11:00 - 17:00"
-        ),
-        usuarioFrom(
-            id = 2,
-            nombre = "Diego",
-            password = "Municipal132",
-            carrera = "Sistemas",
-            cursos = listOf("Android", "C++ Pthreads"),
-            tutorias = emptyList(),
-            telefono = "5555-5555",
-            email = "diego@uvg.edu.gt",
-            avatar = R.drawable.cuchututor,
-            descripcion = "Prueba.",
-            horarios = "14:00 - 18:00"
-        ),
-        usuarioFrom(
-            id = 3,
-            nombre = "Santiago",
-            password = "Corderito132",
-            carrera = "Química",
-            cursos = listOf("Química"),
-            tutorias = emptyList(),
-            telefono = "5555-0000",
-            email = "santi@uvg.edu.gt",
-            avatar = R.drawable.cuchututor,
-            descripcion = "Químico curioso, profe paciente.",
-            horarios = "09:00 - 12:00"
-        ),
-        usuarioFrom(
-            id = 4,
-            nombre = "Samuel",
-            password = "Samu132",
-            carrera = "Biología",
-            cursos = listOf("Ciencias de la vida"),
-            tutorias = emptyList(),
-            telefono = "5555-1111",
-            email = "samu@uvg.edu.gt",
-            avatar = R.drawable.cuchututor,
-            descripcion = "AAAA.",
-            horarios = "10:00 - 16:00"
-        ),
-        usuarioFrom(
-            id = 5,
-            nombre = "Pablo",
-            password = "Pablownski",
-            carrera = "Marketing",
-            cursos = listOf("Marketing Digital", "Cálculo para el mercadeo"),
-            tutorias = emptyList(),
-            telefono = "5555-2222",
-            email = "pablo@uvg.edu.gt",
-            avatar = R.drawable.cuchututor,
-            descripcion = "Prueba.",
-            horarios = "13:00 - 19:00"
-        ),
-        usuarioFrom(
-            id = 6,
-            nombre = "Daniel",
-            password = "Danielson132",
-            carrera = "Civil Arquitectonica",
-            cursos = listOf("Pisos 1", "Pisos Picados 3"),
-            tutorias = emptyList(),
-            telefono = "5555-3333",
-            email = "daniel@uvg.edu.gt",
-            avatar = R.drawable.cuchututor,
-            descripcion = "Prueba.",
-            horarios = "08:00 - 12:00"
-        ),
-        usuarioFrom(
-            id = 7,
-            nombre = "Juan",
-            password = "Juanito057",
-            carrera = "Bioquimica",
-            cursos = listOf("Quimica 2", "FisicoQuimica"),
-            tutorias = emptyList(),
-            telefono = "5555-4444",
-            email = "juan@uvg.edu.gt",
-            avatar = R.drawable.cuchututor,
-            descripcion = "Prueba.",
-            horarios = "15:00 - 20:00"
-        ),
-        usuarioFrom(
-            id = 0,
-            nombre = "Debug",
-            password = "a",
-            carrera = "Sistemas",
-            cursos = listOf("Cálculo 2", "Física 3", "Plataformas Móviles", "Ecuaciones Diferenciales"),
-            tutorias = emptyList(),
-            telefono = "5514-2209",
-            email = "a",
-            avatar = R.drawable.cuchututor,
-            descripcion = "El mejor profe de la UVG",
-            horarios = "11:00 - 17:00"
-        ),
-    )
-
-    fun cargarTutorias() {
-        viewModelScope.launch {
-            _homeUiState.update { it.copy(isLoading = true, error = null) }
-            repo.getTutorias().collect { result ->
-                result.onSuccess { lista ->
-                    for (t in lista) {
-                        if (t !in usuarioLogeado!!.tutorias) usuarioLogeado!!.tutorias.add(t)
+    fun cargarUsuarios(onComplete: (() -> Unit)? = null) {
+        refUsuarios.get().addOnSuccessListener { snapshot ->
+            userList.clear()
+            for (userSnapshot in snapshot.children) {
+                try {
+                    val id = userSnapshot.child("id").getValue(Int::class.java) ?: 0
+                    val nombre = userSnapshot.child("nombre").getValue(String::class.java) ?: ""
+                    val password = userSnapshot.child("password").getValue(String::class.java) ?: ""
+                    val carrera = userSnapshot.child("carrera").getValue(String::class.java) ?: ""
+                    val cursos = userSnapshot.child("cursos").children.mapNotNull { it.getValue(String::class.java) }
+                    val tutorias = userSnapshot.child("tutorias").children.mapNotNull {
+                        val dia = it.child("dia").getValue(String::class.java) ?: ""
+                        val horario = it.child("horario").getValue(String::class.java) ?: ""
+                        val curso = it.child("curso").getValue(String::class.java) ?: ""
+                        val tutor = it.child("tutor").getValue(String::class.java) ?: ""
+                        Tutoria(dia, horario, curso, tutor)
                     }
-                    _homeUiState.update { it.copy(isLoading = false, tutorias = usuarioLogeado!!.tutorias, error = null) }
-                }.onFailure { e ->
-                    _homeUiState.update { it.copy(isLoading = false, error = e.message) }
+                    val telefono = userSnapshot.child("telefono").getValue(String::class.java) ?: ""
+                    val email = userSnapshot.child("email").getValue(String::class.java) ?: ""
+                    val descripcion = userSnapshot.child("descripcion").getValue(String::class.java) ?: ""
+                    val horarios = userSnapshot.child("horarios").getValue(String::class.java) ?: ""
+                    val avatarName = userSnapshot.child("avatar").getValue(String::class.java) ?: "cuchututor"
+
+                    val avatarResId = when (avatarName) {
+                        "cuchututor" -> R.drawable.cuchututor
+                        else -> R.drawable.cuchututor
+                    }
+
+                    val usuario = Usuario(
+                        id = id,
+                        nombre = nombre,
+                        password = password,
+                        carrera = carrera,
+                        cursos = androidx.compose.runtime.snapshots.SnapshotStateList<String>().apply { addAll(cursos) },
+                        tutorias = androidx.compose.runtime.snapshots.SnapshotStateList<Tutoria>().apply { addAll(tutorias) },
+                        telefono = telefono,
+                        email = email,
+                        descripcion = descripcion,
+                        horarios = horarios,
+                        avatar = avatarResId
+                    )
+                    userList.add(usuario)
+                } catch (e: Exception) {
+                    Log.e("Firebase", "Error parseando usuario: ${e.message}")
                 }
             }
+            Log.d("Firebase", "Usuarios cargados: ${userList.size}")
+            onComplete?.invoke()
+        }.addOnFailureListener { e ->
+            Log.e("Firebase", "Error al obtener usuarios: ${e.message}")
+            onComplete?.invoke()
         }
     }
 
-    fun agregarTutoria(nueva: Tutoria) {
-        _homeUiState.update { current ->
-            current.copy(tutorias = current.tutorias + nueva)
-        }
+    fun checkLogin(email: String, password: String): Boolean {
+        return userList.any { it.email == email && it.password == password }
+    }
 
-        usuarioLogeado?.tutorias?.add(nueva)
+    fun login(email: String, password: String) {
+        usuarioLogeado = userList.find { it.email == email && it.password == password }
+        Log.d("Login", "Usuario logueado: ${usuarioLogeado?.nombre}")
+    }
+
+    fun logout() {
+        usuarioLogeado = null
+    }
+
+    // ----------------------------
+    // 🔹 HOME SCREEN (TUTORÍAS)
+    // ----------------------------
+
+    private val _homeUiState = MutableStateFlow(HomeUiState())
+    val homeUiState = _homeUiState.asStateFlow()
+
+    /**
+     * Carga las tutorías del usuario logueado (localmente por ahora)
+     */
+    fun cargarTutorias() {
+
+        viewModelScope.launch {
+
+            _homeUiState.value = HomeUiState(isLoading = true)
+
+            try {
+
+                val usuario = usuarioLogeado
+
+                if (usuario == null) {
+
+                    _homeUiState.value = HomeUiState(error = "Usuario no logueado")
+
+                    return@launch
+
+                }
+
+
+
+                // Obtener las tutorías más recientes desde Firebase
+
+                val ref = db.getReference("usuarios/${usuario.id}/tutorias")
+
+                ref.get().addOnSuccessListener { snapshot ->
+
+                    val nuevasTutorias = snapshot.children.mapNotNull {
+
+                        val dia = it.child("dia").getValue(String::class.java) ?: return@mapNotNull null
+
+                        val horario = it.child("horario").getValue(String::class.java) ?: return@mapNotNull null
+
+                        val curso = it.child("curso").getValue(String::class.java) ?: return@mapNotNull null
+
+                        val tutor = it.child("tutor").getValue(String::class.java) ?: return@mapNotNull null
+
+                        Tutoria(dia, horario, curso, tutor)
+
+                    }
+
+
+
+                    usuario.tutorias.clear()
+
+                    usuario.tutorias.addAll(nuevasTutorias)
+
+
+
+                    _homeUiState.value = HomeUiState(isLoading = false, tutorias = nuevasTutorias)
+
+                }.addOnFailureListener {
+
+                    _homeUiState.value = HomeUiState(error = "Error al leer tutorías")
+
+                }
+
+            } catch (e: Exception) {
+
+                _homeUiState.value = HomeUiState(isLoading = false, error = e.message)
+
+                }
+
+            }
+
+    }
+
+    fun agregarTutoria(nueva: Tutoria) {
+        viewModelScope.launch {
+            val usuario = usuarioLogeado ?: return@launch
+            try {
+                usuario.tutorias.add(nueva)
+
+                // Actualizar en Firebase
+                val ref = db.getReference("usuarios/${usuario.id}/tutorias")
+                ref.setValue(usuario.tutorias.toList())
+                    .addOnSuccessListener {
+                        Log.d("Firebase", "Tutoría agregada correctamente.")
+                    }
+                    .addOnFailureListener {
+                        Log.e("Firebase", "Error al agregar tutoría: ${it.message}")
+                    }
+
+                // Actualizar UI localmente
+                _homeUiState.value = _homeUiState.value.copy(
+                    tutorias = usuario.tutorias.toList()
+                )
+            } catch (e: Exception) {
+                Log.e("Firebase", "Error en agregarTutoria: ${e.message}")
+                }
+            }
+    }
+    fun eliminarTutoria(tutoria: Tutoria) {
+        viewModelScope.launch {
+            val usuario = usuarioLogeado ?: return@launch
+            try {
+                usuario.tutorias.remove(tutoria)
+
+                // Actualizar en Firebase
+                val ref = db.getReference("usuarios/${usuario.id}/tutorias")
+                ref.setValue(usuario.tutorias.toList())
+                    .addOnSuccessListener {
+                        Log.d("Firebase", "Tutoría eliminada correctamente.")
+                    }
+                    .addOnFailureListener {
+                        Log.e("Firebase", "Error al eliminar tutoría: ${it.message}")
+                    }
+
+                // Actualizar UI localmente
+                _homeUiState.value = _homeUiState.value.copy(
+                    tutorias = usuario.tutorias.toList()
+                )
+            } catch (e: Exception) {
+                Log.e("Firebase", "Error en eliminarTutoria: ${e.message}")
+                }
+            }
     }
 
     fun updateUsuarioLogeado(
@@ -164,73 +224,17 @@ class AppVM(
         telefono: String,
         email: String,
         descripcion: String,
-        horarios: String,
-        avatar: Int? = null
-    ) {
-        usuarioLogeado?.let { u ->
-            u.password = password
-            u.carrera = carrera
-            u.cursos.apply {
-                clear()
-                addAll(cursos)
-            }
-            u.telefono = telefono
-            u.email = email
-            if (avatar != null) u.avatar = avatar
-            u.descripcion = descripcion
-            u.horarios = horarios
-            usuarioLogeado = u
-        }
-    }
-
-    fun login(mail: String, pass: String){
-        for (u: Usuario in userList) {
-            if (u.email == mail && u.password == pass) {
-                usuarioLogeado = u
-            }
-        }
-    }
-
-    fun logout(){
-        usuarioLogeado = null
-        _homeUiState.update { HomeUiState() }
-    }
-
-    fun checkLogin(mail: String, pass: String): Boolean {
-        for (u: Usuario in userList) {
-            if (u.email == mail && u.password == pass) {
-                usuarioLogeado = u
-                return true
-            }
-        }
-        return false
-    }
-
-
-    fun usuarioFrom(
-        id: Int,
-        nombre: String,
-        password: String,
-        carrera: String,
-        cursos: List<String>,
-        tutorias: List<Tutoria>,
-        telefono: String,
-        email: String,
-        avatar: Int,
-        descripcion: String,
         horarios: String
-    ): Usuario {
-        return Usuario(
-            id = id,
-            nombre = nombre,
-            password = password,
-            carrera = carrera,
-            cursos = mutableStateListOf<String>().also { it.addAll(cursos) },
-            tutorias = mutableStateListOf<Tutoria>().also { it.addAll(tutorias) },
-            telefono = telefono,
-            email = email, avatar = avatar,
-            descripcion = descripcion,
-            horarios = horarios
-        )
-    }
+    ) {
+        usuarioLogeado?.let {
+            it.password = password
+            it.carrera = carrera
+            it.cursos.clear()
+            it.cursos.addAll(cursos)
+            it.telefono = telefono
+            it.email = email
+            it.descripcion = descripcion
+            it.horarios = horarios
+            }
+        }
 }
