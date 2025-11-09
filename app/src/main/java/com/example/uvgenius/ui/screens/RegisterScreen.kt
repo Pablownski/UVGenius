@@ -26,6 +26,7 @@ import com.example.uvgenius.ui.theme.PrimaryGreen
 import com.example.uvgenius.ui.view.AppVM
 import kotlin.random.Random
 import androidx.compose.runtime.mutableStateListOf
+import com.example.uvgenius.ui.theme.ContentDarkGray
 
 @Composable
 fun RegisterScreen(navController: NavController, viewModel: AppVM) {
@@ -128,7 +129,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = PrimaryGreen,
-                            unfocusedBorderColor = PrimaryGreen,
+                            unfocusedBorderColor = Color.White,
                             focusedLabelColor = PrimaryGreen
                         )
                     )

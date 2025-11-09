@@ -38,12 +38,12 @@ import com.example.uvgenius.ui.view.AppVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel: AppVM) {
+fun TutorDetailScreen(usuario: Usuario, navController: NavController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Perfil de Tutor", color = Color.White) },
+                title = { Text("Perfil de: ${usuario.nombre}", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(

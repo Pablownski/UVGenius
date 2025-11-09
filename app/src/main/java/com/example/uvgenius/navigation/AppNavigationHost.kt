@@ -22,7 +22,7 @@ fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
             val id = backStack.arguments?.getString("id")?.toIntOrNull()
             val tutor = viewModel.userList.find { it.id == id }
             if (tutor != null) {
-                TutorDetailScreen(tutor, navController, viewModel)
+                TutorDetailScreen(tutor, navController)
             }
         }
 

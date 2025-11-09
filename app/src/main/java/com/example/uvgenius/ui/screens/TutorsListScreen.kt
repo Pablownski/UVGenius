@@ -1,151 +1,198 @@
 package com.example.uvgenius.ui.screens
 
-import android.R.attr.label
-import android.R.attr.singleLine
+import android.R.attr.onClick
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.uvgenius.model.Usuario
 import com.example.uvgenius.navigation.Routes
 import com.example.uvgenius.ui.components.BottomNavBar
-import com.example.uvgenius.ui.components.TopNavBar
 import com.example.uvgenius.ui.components.TutorCard
+import com.example.uvgenius.ui.components.TopNavBar
+import com.example.uvgenius.ui.theme.ContentDarkGray
+import com.example.uvgenius.ui.theme.PrimaryGreen
 import com.example.uvgenius.ui.view.AppVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TutorsListScreen(
-    navController: NavController,
-    viewModel: AppVM
-) {
-    val user = viewModel.usuarioLogeado
-    LaunchedEffect(user) {
-        if (user == null) {
-            navController.navigate(Routes.Login.route) {
-                popUpTo(0)
-                launchSingleTop = true
-            }
-        }
-    }
-    if (user == null) return
+fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
+    val usuarios by remember { derivedStateOf { viewModel.userList } }
 
-    var searchQuery by remember { mutableStateOf("") }
-    var filterQuery by remember { mutableStateOf("") }
-    var showSearchBar by remember { mutableStateOf(false) }
-    var showFilterBar by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
+    var showFilters by remember { mutableStateOf(false) }
+    var showTutores by remember { mutableStateOf(true) }
+    var showNoTutores by remember { mutableStateOf(true) }
+    var materiaFiltro by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = { TopNavBar(onLogout = {
-            viewModel.logout()
-            navController.navigate(Routes.Login.route){
-                popUpTo(0)
-                launchSingleTop = true
-            }
-        }) },
+        topBar = { TopNavBar { viewModel.logout() } },
         bottomBar = { BottomNavBar(navController) }
-    ) { paddingValues ->
-
-        val tutorsFiltrados = viewModel.userList.filter { tutor ->
-            val matchNombre = tutor.nombre.contains(searchQuery, ignoreCase = true)
-            val matchCurso = if (filterQuery.isNotBlank()) {
-                tutor.cursos.any { it.contains(filterQuery, ignoreCase = true) }
-            } else true
-            matchNombre && matchCurso && tutor != user
-        }
-
-        LazyColumn(
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 100.dp)
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    placeholder = { Text("Buscar usuarios", color = PrimaryGreen) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth(0.85f)
+                        .background(Color.White, RoundedCornerShape(10.dp)),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryGreen,
+                        unfocusedBorderColor = PrimaryGreen,
+                        focusedLabelColor = PrimaryGreen
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                )
 
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                IconButton(
+                    onClick = { showFilters = true },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(Color.White, RoundedCornerShape(8.dp))
                 ) {
-                    OutlinedButton(onClick = {
-                        showSearchBar = !showSearchBar
-                        if (!showSearchBar) searchQuery = ""
-                    }) {
-                        Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.White)
-                    }
-                    OutlinedButton(onClick = {
-                        showFilterBar = !showFilterBar
-                        if (!showFilterBar) filterQuery = ""
-                    }) {
-                        Icon(Icons.Default.FilterList, contentDescription = "Filtro", tint = Color.White)
-                    }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-
-            if (showSearchBar) {
-                item {
-                    OutlinedTextField(
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.White,
-                            unfocusedBorderColor = Color.White,
-                            focusedLabelColor = Color.White,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor=Color.White
-                        ),
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        label = { Text("Buscar por nombre de tutor", color = Color.White) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = "Filtros",
+                        tint = PrimaryGreen
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
 
+            if (showFilters) {
+                AlertDialog(
+                    onDismissRequest = { showFilters = false },
+                    confirmButton = {
+                        TextButton(onClick = { showFilters = false }) {
+                            Text("Aplicar", color = PrimaryGreen)
+                        }
+                    },
+                    title = { Text("Filtros de búsqueda", fontWeight = FontWeight.Bold) },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Mostrar usuarios:", fontWeight = FontWeight.SemiBold)
 
-            if (showFilterBar) {
-                item {
-                    OutlinedTextField(
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.White,
-                            unfocusedBorderColor = Color.White,
-                            focusedLabelColor = Color.White,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor=Color.White
-                        ),
-                        value = filterQuery,
-                        onValueChange = { filterQuery = it },
-                        label = { Text("Filtrar por curso", color = Color.White) },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
-            }
-
-
-            items(tutorsFiltrados) { tutor ->
-                if (tutor.tutorias.isNotEmpty()) {
-                    TutorCard(
-                        tutor,
-                        modifier = Modifier
-                            .clickable {
-                                navController.navigate(Routes.TutorDetail.createRoute(tutor.id))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = showTutores,
+                                    onCheckedChange = { showTutores = it },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = PrimaryGreen,
+                                        uncheckedColor = ContentDarkGray,
+                                        checkmarkColor = Color.White
+                                    )
+                                )
+                                Text(text = "Tutores",
+                                    modifier = Modifier.clickable{showTutores = !showTutores}
+                                    )
                             }
-                            .padding(bottom = 8.dp)
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = showNoTutores,
+                                    onCheckedChange = { showNoTutores = it },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = PrimaryGreen,
+                                        uncheckedColor = ContentDarkGray,
+                                        checkmarkColor = Color.White
+                                    )
+                                )
+                                Text("No tutores",
+                                    modifier = Modifier.clickable{showNoTutores = !showNoTutores}
+                                )
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+                            Text("Filtrar por materia:", fontWeight = FontWeight.SemiBold)
+
+                            Spacer(Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = materiaFiltro,
+                                onValueChange = { materiaFiltro = it },
+                                label = { Text("Materia") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = PrimaryGreen,
+                                    unfocusedBorderColor = PrimaryGreen,
+                                    focusedLabelColor = PrimaryGreen
+                                )
+                            )
+                        }
+                    }
+                )
+            }
+
+            val usuariosFiltrados = usuarios.filter { user ->
+                if (user.id == viewModel.usuarioLogeado!!.id){
+                    return@filter false
+                }
+                val esTutor = user.cursos.isNotEmpty()
+
+                val visiblePorTipo = when {
+                    showTutores && showNoTutores -> true
+                    showTutores && !showNoTutores -> esTutor
+                    !showTutores && showNoTutores -> !esTutor
+                    else -> false
+                }
+                if (!visiblePorTipo) return@filter false
+
+                if (materiaFiltro.isBlank()) return@filter true
+
+                user.nombre.contains(materiaFiltro, ignoreCase = true) ||
+                        user.cursos.any { it.contains(materiaFiltro, ignoreCase = true) }
+            }
+
+            if (usuariosFiltrados.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "No se encontraron usuarios con los filtros de búsqueda.",
+                        color = Color.White,
+                        fontSize = 20.sp
                     )
+                }
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(usuariosFiltrados) { usuario ->
+                        TutorCard(
+                            tutor = usuario,
+                            modifier = Modifier.clickable {
+                                navController.navigate("${Routes.TutorDetail.route}/${usuario.id}")
+                            }
+                        )
+                    }
                 }
             }
         }
