@@ -83,7 +83,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                 if (uiState.tutorias.isEmpty()) {
                     item {
                         Text(
-                            "No tienes tutorías programadas",
+                            if (uiState.isLoading) "" else "No tienes tutorías programadas",
                             fontSize = 24.sp,
                             color = MaterialTheme.colorScheme.primary
                         )

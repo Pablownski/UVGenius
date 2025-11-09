@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
@@ -26,6 +27,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -89,6 +91,8 @@ fun EditProfileDialog(
 
     var uploadedImageUrl by remember { mutableStateOf<String?>(null) }
     var isUploading by remember { mutableStateOf(false) }
+    var showUploadResult by remember { mutableStateOf(false) }
+    var uploadSuccess by remember { mutableStateOf(false) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -103,10 +107,14 @@ fun EditProfileDialog(
                     onSuccess = { downloadUrl ->
                         uploadedImageUrl = downloadUrl
                         isUploading = false
+                        uploadSuccess = true
+                        showUploadResult = true
                         Log.d("FirebaseUpload", "Éxito: $downloadUrl")
                     },
                     onFailure = { exception ->
                         isUploading = false
+                        uploadSuccess = false
+                        showUploadResult = true
                         Log.e("FirebaseUpload", "Error: ", exception)
                     }
                 )
@@ -158,10 +166,6 @@ fun EditProfileDialog(
                         photoPickerLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
-
-                        if (uploadedImageUrl != null) {
-                            user.avatar = uploadedImageUrl!!
-                        }
                     },
                     enabled = !isUploading,
                     colors = ButtonDefaults.buttonColors(
@@ -169,7 +173,19 @@ fun EditProfileDialog(
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(8.dp)
-                ) { Text(if (isUploading) "Subiendo..." else "Subir avatar") }
+                ) {
+                    if (isUploading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text("Subiendo...")
+                    } else {
+                        Text("Subir avatar")
+                    }
+                }
 
 
                 OutlinedTextField(
@@ -232,7 +248,7 @@ fun EditProfileDialog(
                 ) {
                     cursos.forEach { c ->
                         AssistChip(
-                            onClick = { /* no-op */ },
+                            onClick = {},
                             label = { Text(c) },
                             trailingIcon = {
                                 Icon(
@@ -335,6 +351,27 @@ fun EditProfileDialog(
                     modifier = Modifier.fillMaxWidth(),
 
                 )
+
+                if (showUploadResult) {
+                    AlertDialog(
+                        onDismissRequest = { showUploadResult = false },
+                        confirmButton = {
+                            TextButton(onClick = { showUploadResult = false }) {
+                                Text("Aceptar", color = PrimaryGreen)
+                            }
+                        },
+                        title = {
+                            Text(if (uploadSuccess) "Imagen subida correctamente" else "Error al subir imagen")
+                        },
+                        text = {
+                            if (uploadSuccess) {
+                                Text("Tu nueva foto de perfil se ha subido con éxito a Firebase Storage.")
+                            } else {
+                                Text("Ocurrió un problema al subir la imagen. Intenta nuevamente.")
+                            }
+                        }
+                    )
+                }
             }
         }
     )

@@ -137,14 +137,16 @@ fun TutorsListScreen(
 
 
             items(tutorsFiltrados) { tutor ->
-                TutorCard(
-                    tutor,
-                    modifier = Modifier
-                        .clickable {
-                            navController.navigate(Routes.TutorDetail.createRoute(tutor.id))
-                        }
-                        .padding(bottom = 8.dp)
-                )
+                if (tutor.tutorias.isNotEmpty()) {
+                    TutorCard(
+                        tutor,
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate(Routes.TutorDetail.createRoute(tutor.id))
+                            }
+                            .padding(bottom = 8.dp)
+                    )
+                }
             }
         }
     }
