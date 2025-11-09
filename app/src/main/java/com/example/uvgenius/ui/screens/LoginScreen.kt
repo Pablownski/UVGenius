@@ -47,7 +47,6 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
                 contentDescription = "Logo UVG"
             )
 
-
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

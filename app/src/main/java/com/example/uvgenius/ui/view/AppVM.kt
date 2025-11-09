@@ -17,6 +17,8 @@ class AppVM : ViewModel() {
     var userList = mutableStateListOf<Usuario>()
     var usuarioLogeado: Usuario? = null
 
+    val defaultAvatar = "https://firebasestorage.googleapis.com/v0/b/uvgenius-24d2d.firebasestorage.app/o/defaultpfp.png?alt=media&token=6018f011-2b68-49ca-8b1d-7fbccd77de9a"
+
     private val db = FirebaseDatabase.getInstance()
     private val refUsuarios = db.getReference("usuarios")
 
@@ -41,12 +43,7 @@ class AppVM : ViewModel() {
                     val email = userSnapshot.child("email").getValue(String::class.java) ?: ""
                     val descripcion = userSnapshot.child("descripcion").getValue(String::class.java) ?: ""
                     val horarios = userSnapshot.child("horarios").getValue(String::class.java) ?: ""
-                    val avatarName = userSnapshot.child("avatar").getValue(String::class.java) ?: "cuchututor"
-
-                    val avatarResId = when (avatarName) {
-                        "cuchututor" -> R.drawable.cuchututor
-                        else -> R.drawable.cuchututor
-                    }
+                    val avatarURL = userSnapshot.child("avatar").getValue(String::class.java) ?: defaultAvatar
 
                     val usuario = Usuario(
                         id = id,
@@ -59,7 +56,7 @@ class AppVM : ViewModel() {
                         email = email,
                         descripcion = descripcion,
                         horarios = horarios,
-                        avatar = avatarResId
+                        avatar = avatarURL
                     )
                     userList.add(usuario)
                 } catch (e: Exception) {
@@ -86,7 +83,6 @@ class AppVM : ViewModel() {
     fun logout() {
         usuarioLogeado = null
     }
-
 
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState = _homeUiState.asStateFlow()
@@ -188,7 +184,8 @@ class AppVM : ViewModel() {
         telefono: String,
         email: String,
         descripcion: String,
-        horarios: String
+        horarios: String,
+        avatar: String
     ) {
         val usuario = usuarioLogeado ?: return
 
@@ -201,6 +198,7 @@ class AppVM : ViewModel() {
         usuario.email = email
         usuario.descripcion = descripcion
         usuario.horarios = horarios
+        usuario.avatar = avatar
 
         // Actualizar en Firebase
         val ref = db.getReference("usuarios/${usuario.id}")
@@ -215,7 +213,7 @@ class AppVM : ViewModel() {
             "email" to usuario.email,
             "descripcion" to usuario.descripcion,
             "horarios" to usuario.horarios,
-            "avatar" to "cuchututor"
+            "avatar" to usuario.avatar
         )
 
         ref.updateChildren(userMap)
@@ -241,7 +239,7 @@ class AppVM : ViewModel() {
                 "email" to usuario.email,
                 "descripcion" to usuario.descripcion,
                 "horarios" to usuario.horarios,
-                "avatar" to "cuchututor"
+                "avatar" to defaultAvatar
             )
 
             ref.setValue(userMap)

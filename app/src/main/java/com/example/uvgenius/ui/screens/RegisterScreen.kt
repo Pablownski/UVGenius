@@ -165,7 +165,8 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                                     email = email,
                                     descripcion = "Nuevo usuario registrado.",
                                     horarios = "Sin horarios asignados",
-                                    avatar = R.drawable.cuchututor
+                                    // avatar default
+                                    avatar = viewModel.defaultAvatar
                                 )
 
                                 // Registrar en Firebase y agregar a lista local

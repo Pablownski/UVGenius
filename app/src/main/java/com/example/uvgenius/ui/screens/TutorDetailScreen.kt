@@ -1,5 +1,6 @@
 package com.example.uvgenius.ui.screens
 
+import android.R.attr.contentDescription
 import com.example.uvgenius.model.Usuario
 
 
@@ -27,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.uvgenius.R
 import com.example.uvgenius.navigation.Routes
 import com.example.uvgenius.ui.components.BottomNavBar
@@ -139,8 +141,8 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController, viewModel:
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ){
-                    Image(
-                        painter = painterResource(id = usuario.avatar),
+                    AsyncImage(
+                        model = usuario.avatar,
                         contentDescription = "Foto de tutor",
                         modifier = Modifier
                             .size(170.dp)

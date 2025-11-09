@@ -44,7 +44,13 @@ fun TutorsListScreen(
     var showFilterBar by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { TopNavBar(onLogout = { viewModel.logout() }) },
+        topBar = { TopNavBar(onLogout = {
+            viewModel.logout()
+            navController.navigate(Routes.Login.route){
+                popUpTo(0)
+                launchSingleTop = true
+            }
+        }) },
         bottomBar = { BottomNavBar(navController) }
     ) { paddingValues ->
 

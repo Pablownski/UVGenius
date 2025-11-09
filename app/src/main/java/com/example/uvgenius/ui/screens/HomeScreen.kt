@@ -53,7 +53,13 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = { BottomNavBar(navController) },
-        topBar = { TopNavBar(onLogout = { viewModel.logout() }) },
+        topBar = { TopNavBar(onLogout = {
+            viewModel.logout()
+            navController.navigate(Routes.Login.route){
+                popUpTo(0)
+                launchSingleTop = true
+            }
+        }) },
     ) { innerPadding ->
         Column(
             modifier = Modifier

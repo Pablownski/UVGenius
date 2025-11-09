@@ -1,6 +1,12 @@
 package com.example.uvgenius.ui.components
 
+import android.R.attr.label
 import android.R.attr.maxHeight
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -19,8 +26,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -38,10 +47,15 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.example.uvgenius.model.Usuario
 import com.example.uvgenius.ui.theme.ContentDarkGray
 import com.example.uvgenius.ui.theme.PrimaryGreen
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.util.UUID
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditProfileDialog(
     user: Usuario,
@@ -54,7 +68,8 @@ fun EditProfileDialog(
         telefono: String,
         email: String,
         descripcion: String,
-        horarios: String
+        horarios: String,
+        avatar: String
     ) -> Unit
 ) {
     var nombre by remember { mutableStateOf(user.nombre) }
@@ -72,6 +87,35 @@ fun EditProfileDialog(
     val scroll = rememberScrollState()
     val maxHeight = (LocalWindowInfo.current.containerSize.height * 0.8).dp
 
+    var uploadedImageUrl by remember { mutableStateOf<String?>(null) }
+    var isUploading by remember { mutableStateOf(false) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                Log.d("PhotoPicker", "URI seleccionada: $uri")
+                // El usuario seleccionó una imagen, la 'uri' no es nula
+                // Iniciar la subida
+                isUploading = true
+                uploadImageToFirebase(
+                    uri = uri,
+                    onSuccess = { downloadUrl ->
+                        uploadedImageUrl = downloadUrl
+                        isUploading = false
+                        Log.d("FirebaseUpload", "Éxito: $downloadUrl")
+                    },
+                    onFailure = { exception ->
+                        isUploading = false
+                        Log.e("FirebaseUpload", "Error: ", exception)
+                    }
+                )
+            } else {
+                Log.d("PhotoPicker", "No se seleccionó ninguna imagen.")
+            }
+        }
+    )
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -79,13 +123,14 @@ fun EditProfileDialog(
                 onClick = {
                     onConfirm(
                         nombre, password, carrera, cursos,
-                        telefono, email, descripcion, horarios
+                        telefono, email, descripcion, horarios, uploadedImageUrl ?: user.avatar
                     )
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF1B5E20),
                     contentColor = Color.White
-                )
+                ),
+                shape = RoundedCornerShape(8.dp)
             ) { Text("Confirmar") }
         },
         dismissButton = {
@@ -94,7 +139,8 @@ fun EditProfileDialog(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF1B5E20),
                     contentColor = Color.White
-                )
+                ),
+                shape = RoundedCornerShape(8.dp)
             ) { Text("Cancelar") }
         },
         title = { Text("Editar perfil") },
@@ -106,6 +152,26 @@ fun EditProfileDialog(
                     .verticalScroll(scroll),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+
+                Button(
+                    onClick = {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+
+                        if (uploadedImageUrl != null) {
+                            user.avatar = uploadedImageUrl!!
+                        }
+                    },
+                    enabled = !isUploading,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1B5E20),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) { Text(if (isUploading) "Subiendo..." else "Subir avatar") }
+
+
                 OutlinedTextField(
                     value = nombre,
                     onValueChange = { nombre = it },
@@ -272,4 +338,33 @@ fun EditProfileDialog(
             }
         }
     )
+}
+
+/*
+ Esta función fue creada por la AI utilizada por el profesor a manera de explicarnos
+ cómo funciona el photopicker.
+ */
+private fun uploadImageToFirebase(
+    uri: Uri,
+    onSuccess: (String) -> Unit,
+    onFailure: (Exception) -> Unit
+) {
+    val storage = Firebase.storage
+
+    val fileName = "imagenes/${UUID.randomUUID()}"
+    val storageRef = storage.reference.child(fileName)
+
+    storageRef.putFile(uri)
+        .addOnSuccessListener { taskSnapshot ->
+            taskSnapshot.storage.downloadUrl
+                .addOnSuccessListener { downloadUri ->
+                    onSuccess(downloadUri.toString())
+                }
+                .addOnFailureListener { exception ->
+                    onFailure(exception)
+                }
+        }
+        .addOnFailureListener { exception ->
+            onFailure(exception)
+        }
 }

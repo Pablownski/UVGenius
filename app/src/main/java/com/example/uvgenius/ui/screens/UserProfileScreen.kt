@@ -1,6 +1,6 @@
 package com.example.uvgenius.ui.screens
 
-import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,7 +63,13 @@ fun UserProfileScreen(
     var showEdit by remember {mutableStateOf(false)}
 
     Scaffold(
-        topBar = { TopNavBar { viewModel.logout() } },
+        topBar = { TopNavBar {
+            viewModel.logout()
+            navController.navigate(Routes.Login.route){
+                popUpTo(0)
+                launchSingleTop = true
+            }
+        } },
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
         Column(
@@ -84,8 +90,8 @@ fun UserProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = painterResource(user.avatar),
+                    AsyncImage(
+                        model = user.avatar,
                         contentDescription = "Avatar",
                         modifier = Modifier
                             .size(180.dp)
@@ -156,7 +162,7 @@ fun UserProfileScreen(
         EditProfileDialog(
             user = user,
             onDismiss = { showEdit = false },
-            onConfirm = { nombre, password, carrera, cursos, telefono, email, descripcion, horarios ->
+            onConfirm = { nombre, password, carrera, cursos, telefono, email, descripcion, horarios, avatar ->
                 viewModel.updateUsuarioLogeado(
                     nombre = nombre,
                     password = password,
@@ -165,7 +171,8 @@ fun UserProfileScreen(
                     telefono = telefono,
                     email = email,
                     descripcion = descripcion,
-                    horarios = horarios
+                    horarios = horarios,
+                    avatar = avatar
                 )
                 showEdit = false
             }

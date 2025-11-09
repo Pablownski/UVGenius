@@ -16,6 +16,5 @@ data class Usuario (
     var email: String,
     var descripcion: String,
     var horarios: String,
-    @DrawableRes
-    var avatar: Int
+    var avatar: String
 )
