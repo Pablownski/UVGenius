@@ -365,7 +365,7 @@ fun EditProfileDialog(
                         },
                         text = {
                             if (uploadSuccess) {
-                                Text("Tu nueva foto de perfil se ha subido con éxito a Firebase Storage.")
+                                Text("Tu nueva foto de perfil se ha subido con éxito..")
                             } else {
                                 Text("Ocurrió un problema al subir la imagen. Intenta nuevamente.")
                             }

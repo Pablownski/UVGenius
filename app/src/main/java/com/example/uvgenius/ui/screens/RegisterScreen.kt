@@ -4,7 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +36,9 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
     var telefono by remember { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
 
+    var bottomPadding by remember { mutableStateOf(20.dp) }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -42,7 +47,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(24.dp)
@@ -61,10 +66,12 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(6.dp)
             ) {
+
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 30.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
+                        .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = bottomPadding),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OutlinedTextField(
@@ -80,7 +87,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = email,
@@ -95,7 +102,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = password,
@@ -111,7 +118,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = carrera,
@@ -126,7 +133,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     OutlinedTextField(
                         value = telefono,
@@ -143,10 +150,15 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
 
                     if (error) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Por favor llena todos los campos", color = MaterialTheme.colorScheme.error)
+                        Text(
+                            "Por favor llena todos los campos",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        bottomPadding = 5.dp
+                    } else {
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
-
-                    Spacer(modifier = Modifier.height(20.dp))
 
                     Button(
                         onClick = {
@@ -188,16 +200,13 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                         Text("Registrar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
+                    Spacer(modifier = Modifier.padding(1.dp))
                     Text(
-                        "¿Ya tienes cuenta? Inicia sesión",
+                        text = "¿Ya tienes cuenta? Inicia sesión",
                         fontSize = 14.sp,
                         color = Color.DarkGray,
                         modifier = Modifier.clickable {
-                            navController.navigate(Routes.Login.route) {
-                                popUpTo(Routes.Register.route) { inclusive = true }
-                            }
+                            navController.navigate(Routes.Login.route)
                         }
                     )
                 }
