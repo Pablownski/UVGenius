@@ -36,7 +36,6 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
     var showFilters by remember { mutableStateOf(false) }
     var showTutores by remember { mutableStateOf(true) }
     var showNoTutores by remember { mutableStateOf(true) }
-    var materiaFiltro by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = { TopNavBar { viewModel.logout() } },
@@ -58,7 +57,7 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { searchText = it },
-                    placeholder = { Text("Buscar usuarios", color = PrimaryGreen) },
+                    placeholder = { Text("Buscar", color = PrimaryGreen) },
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(0.85f)
@@ -127,23 +126,6 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
                                     modifier = Modifier.clickable{showNoTutores = !showNoTutores}
                                 )
                             }
-
-                            Spacer(Modifier.height(8.dp))
-                            Text("Filtrar por materia:", fontWeight = FontWeight.SemiBold)
-
-                            Spacer(Modifier.height(8.dp))
-                            OutlinedTextField(
-                                value = materiaFiltro,
-                                onValueChange = { materiaFiltro = it },
-                                label = { Text("Materia") },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = PrimaryGreen,
-                                    unfocusedBorderColor = PrimaryGreen,
-                                    focusedLabelColor = PrimaryGreen
-                                )
-                            )
                         }
                     }
                 )
@@ -153,6 +135,11 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
                 if (user.id == viewModel.usuarioLogeado!!.id){
                     return@filter false
                 }
+
+                if (searchText.isBlank()) {
+                    return@filter true
+                }
+
                 val esTutor = user.cursos.isNotEmpty()
 
                 val visiblePorTipo = when {
@@ -163,10 +150,9 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
                 }
                 if (!visiblePorTipo) return@filter false
 
-                if (materiaFiltro.isBlank()) return@filter true
-
-                user.nombre.contains(materiaFiltro, ignoreCase = true) ||
-                        user.cursos.any { it.contains(materiaFiltro, ignoreCase = true) }
+                user.nombre.unaccent().contains(searchText, ignoreCase = true) ||
+                    user.cursos.any { it.unaccent().contains(searchText, ignoreCase = true)} ||
+                    user.carrera.unaccent().contains(searchText, ignoreCase = true)
             }
 
             if (usuariosFiltrados.isEmpty()) {
@@ -198,3 +184,13 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
         }
     }
 }
+
+/*
+ Función proveída por Gemini para eliminar tildes de string para búsquedas
+ */
+private fun String.unaccent(): String {
+    val regex = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+    val temp = java.text.Normalizer.normalize(this, java.text.Normalizer.Form.NFD)
+    return regex.replace(temp, "")
+}
+
