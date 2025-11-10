@@ -8,7 +8,7 @@ data class UsuarioEntity(
     val nombre: String,
     val password: String,
     val carrera: String,
-    val cursosJson: String,      // se guarda con TypeConverter (Gson)
+    val cursosJson: String,
     val telefono: String,
     val email: String,
     val descripcion: String,

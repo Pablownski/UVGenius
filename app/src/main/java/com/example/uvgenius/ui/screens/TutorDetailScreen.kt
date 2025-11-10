@@ -87,7 +87,7 @@ fun TutorDetailScreen(usuario: Usuario, navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.TopCenter)
-                        .padding(top = 220.dp, start = 16.dp, end = 16.dp), // inicia después del banner
+                        .padding(top = 220.dp, start = 16.dp, end = 16.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(6.dp)

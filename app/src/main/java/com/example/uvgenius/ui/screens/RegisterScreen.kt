@@ -53,7 +53,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                 .fillMaxWidth()
                 .padding(24.dp)
         ) {
-            // Logo
+
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo UVG"
@@ -178,11 +178,10 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                                     email = email,
                                     descripcion = "Nuevo usuario registrado.",
                                     horarios = "Sin horarios asignados",
-                                    // avatar default
                                     avatar = viewModel.defaultAvatar
                                 )
 
-                                // Registrar en Firebase y agregar a lista local
+
                                 viewModel.registrarUsuario(nuevoUsuario) {
                                     navController.navigate(Routes.Login.route) {
                                         popUpTo(Routes.Register.route) { inclusive = true }

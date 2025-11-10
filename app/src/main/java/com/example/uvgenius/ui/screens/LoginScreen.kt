@@ -42,7 +42,7 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth().padding(24.dp)
         ) {
-            // Logo
+
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo UVG"

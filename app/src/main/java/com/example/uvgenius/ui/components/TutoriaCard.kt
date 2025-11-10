@@ -50,7 +50,7 @@ fun TutoriaCard(
                 )
             }
 
-            // Botón de eliminar
+
             if (onDelete != null) {
                 IconButton(onClick = onDelete) {
                     Icon(

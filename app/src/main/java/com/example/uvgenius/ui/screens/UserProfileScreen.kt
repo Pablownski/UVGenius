@@ -84,7 +84,7 @@ fun UserProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White, RoundedCornerShape(16.dp))
-                    .padding(16.dp) // padding interno del card
+                    .padding(16.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),

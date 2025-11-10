@@ -77,7 +77,7 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Cambia esto:
+
                             Icon(
                                 painter = painterResource(R.drawable.ic_offline),
                                 contentDescription = "Offline",
@@ -85,9 +85,9 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                                 modifier = Modifier.size(16.dp)
                             )
 
-                            // Por esto (usando Material Icons):
+
                             Icon(
-                                imageVector = Icons.Default.CloudOff, // O Icons.Default.WifiOff
+                                imageVector = Icons.Default.CloudOff,
                                 contentDescription = "Offline",
                                 tint = Color.White,
                                 modifier = Modifier.size(16.dp)

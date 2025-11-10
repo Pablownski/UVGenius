@@ -2,7 +2,7 @@ package com.example.uvgenius.model
 
 
 
-import androidx.annotation.DrawableRes
+
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 data class Usuario (

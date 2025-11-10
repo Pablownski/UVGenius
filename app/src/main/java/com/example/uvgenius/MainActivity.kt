@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
 
-        // Initialize repository
+
         val database = DatabaseProvider.get(this)
         val firebaseRef = Firebase.database.reference.child("usuarios")
         val repository = UVRepository(database.usuarioDao(), firebaseRef)
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 val viewModel by remember { mutableStateOf(AppVM(repository)) }
 
                 LaunchedEffect(Unit) {
-                    // Initial sync from Firebase to Room
+
                     viewModel.cargarUsuarios()
                 }
 

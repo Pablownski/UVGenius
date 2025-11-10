@@ -17,13 +17,12 @@ class UVRepository(
     private val dao: UsuarioDao,
     private val firebaseRef: DatabaseReference
 ) {
-    /** Observa la caché local. */
+
     fun getUsuarios(): Flow<List<Usuario>> =
         dao.observeUsuarios().map { list ->
             list.map { it.usuario.toDomain(it.tutorias) }
         }
 
-    /** Sincroniza Room ← Firebase (si hay red). No rompe si falla. */
     suspend fun syncFromRemote(): Boolean {
         return try {
             val snapshot = firebaseRef.get().await()
@@ -56,7 +55,7 @@ class UVRepository(
                 )
             }
 
-            // Volcar a Room (transaccional)
+
             dao.clearUsuarios()
             usuarios.forEach { u ->
                 dao.upsertUsuarios(u.toEntity())
@@ -68,7 +67,7 @@ class UVRepository(
             true // Sync exitoso
         } catch (e: Exception) {
             Log.w("UVRepository", "Sync falló (modo offline con Room): ${e.message}")
-            false // Sync falló pero la app sigue funcionando
+            false
         }
     }
 
@@ -81,7 +80,7 @@ class UVRepository(
         dao.clearTutorias(usuario.id)
         dao.upsertTutorias(*usuario.tutoriasToEntities().toTypedArray())
 
-        // DESPUÉS intentar sincronizar con Firebase (best-effort)
+
         try {
             firebaseRef.child(usuario.id.toString()).setValue(
                 mapOf(

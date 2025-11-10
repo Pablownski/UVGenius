@@ -84,7 +84,7 @@ fun EditProfileDialog(
     var horarios by remember { mutableStateOf(user.horarios) }
 
     var newCourse by remember { mutableStateOf("") }
-    var cursos by remember { mutableStateOf(user.cursos.toList()) } // edit buffer
+    var cursos by remember { mutableStateOf(user.cursos.toList()) }
 
     val scroll = rememberScrollState()
     val maxHeight = (LocalWindowInfo.current.containerSize.height * 0.8).dp
@@ -99,8 +99,6 @@ fun EditProfileDialog(
         onResult = { uri ->
             if (uri != null) {
                 Log.d("PhotoPicker", "URI seleccionada: $uri")
-                // El usuario seleccionó una imagen, la 'uri' no es nula
-                // Iniciar la subida
                 isUploading = true
                 uploadImageToFirebase(
                     uri = uri,

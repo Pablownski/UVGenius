@@ -24,7 +24,7 @@ class AppVM(private val repository: UVRepository) : ViewModel() {
     val isOnline = _isOnline.asStateFlow()
 
     init {
-        // Observe Room database for real-time updates
+
         viewModelScope.launch {
             repository.getUsuarios().collect { usuarios ->
                 userList.clear()
@@ -37,7 +37,7 @@ class AppVM(private val repository: UVRepository) : ViewModel() {
     fun cargarUsuarios(onComplete: (() -> Unit)? = null) {
         viewModelScope.launch {
             try {
-                // Intenta sincronizar desde Firebase
+
                 val syncSuccess = repository.syncFromRemote()
                 _isOnline.value = syncSuccess
 
@@ -81,7 +81,7 @@ class AppVM(private val repository: UVRepository) : ViewModel() {
                     return@launch
                 }
 
-                // Datos ya están en Room, solo los mostramos
+
                 _homeUiState.value = HomeUiState(
                     isLoading = false,
                     tutorias = usuario.tutorias.toList()
@@ -98,10 +98,10 @@ class AppVM(private val repository: UVRepository) : ViewModel() {
             try {
                 usuario.tutorias.add(nueva)
 
-                // Guarda en Room Y Firebase (si hay conexión)
+
                 repository.upsertUsuario(usuario)
 
-                // Update UI
+
                 _homeUiState.value = _homeUiState.value.copy(
                     tutorias = usuario.tutorias.toList()
                 )
@@ -118,10 +118,9 @@ class AppVM(private val repository: UVRepository) : ViewModel() {
             try {
                 usuario.tutorias.remove(tutoria)
 
-                // Guarda en Room Y Firebase (si hay conexión)
+
                 repository.upsertUsuario(usuario)
 
-                // Update UI
                 _homeUiState.value = _homeUiState.value.copy(
                     tutorias = usuario.tutorias.toList()
                 )
@@ -157,7 +156,7 @@ class AppVM(private val repository: UVRepository) : ViewModel() {
             usuario.horarios = horarios
             usuario.avatar = avatar
 
-            // Guarda en Room Y Firebase (si hay conexión)
+
             repository.upsertUsuario(usuario)
             Log.d("AppVM", "Perfil actualizado correctamente")
         }
@@ -166,7 +165,6 @@ class AppVM(private val repository: UVRepository) : ViewModel() {
     fun registrarUsuario(usuario: Usuario, onComplete: (() -> Unit)? = null) {
         viewModelScope.launch {
             try {
-                // Guarda en Room Y Firebase (si hay conexión)
                 repository.upsertUsuario(usuario)
                 userList.add(usuario)
                 Log.d("AppVM", "Usuario registrado correctamente")
