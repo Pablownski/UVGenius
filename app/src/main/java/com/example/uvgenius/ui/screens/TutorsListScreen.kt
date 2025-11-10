@@ -132,7 +132,19 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
             }
 
             val usuariosFiltrados = usuarios.filter { user ->
-                if (user.id == viewModel.usuarioLogeado!!.id){
+                if (user.id == viewModel.usuarioLogeado!!.id) {
+                    return@filter false
+                }
+
+                val esTutor = user.cursos.isNotEmpty()
+                val visiblePorTipo = when {
+                    showTutores && showNoTutores -> true
+                    showTutores -> esTutor
+                    showNoTutores -> !esTutor
+                    else -> false
+                }
+
+                if (!visiblePorTipo) {
                     return@filter false
                 }
 
@@ -140,19 +152,11 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
                     return@filter true
                 }
 
-                val esTutor = user.cursos.isNotEmpty()
+                val searchTextNormalized = searchText.unaccent()
+                user.nombre.unaccent().contains(searchTextNormalized, ignoreCase = true) ||
+                        user.carrera.unaccent().contains(searchTextNormalized, ignoreCase = true) ||
+                        user.cursos.any { it.unaccent().contains(searchTextNormalized, ignoreCase = true) }
 
-                val visiblePorTipo = when {
-                    showTutores && showNoTutores -> true
-                    showTutores && !showNoTutores -> esTutor
-                    !showTutores && showNoTutores -> !esTutor
-                    else -> false
-                }
-                if (!visiblePorTipo) return@filter false
-
-                user.nombre.unaccent().contains(searchText, ignoreCase = true) ||
-                    user.cursos.any { it.unaccent().contains(searchText, ignoreCase = true)} ||
-                    user.carrera.unaccent().contains(searchText, ignoreCase = true)
             }
 
             if (usuariosFiltrados.isEmpty()) {
