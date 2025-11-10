@@ -129,7 +129,7 @@ fun RegisterScreen(navController: NavController, viewModel: AppVM) {
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = PrimaryGreen,
-                            unfocusedBorderColor = Color.White,
+                            unfocusedBorderColor = PrimaryGreen,
                             focusedLabelColor = PrimaryGreen
                         )
                     )
