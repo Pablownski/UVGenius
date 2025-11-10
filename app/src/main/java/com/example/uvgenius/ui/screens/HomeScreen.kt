@@ -4,16 +4,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.uvgenius.R
 import com.example.uvgenius.ui.view.AppVM
 import com.example.uvgenius.model.Tutoria
 import com.example.uvgenius.navigation.Routes
@@ -22,13 +25,14 @@ import com.example.uvgenius.ui.components.TopNavBar
 import com.example.uvgenius.ui.components.TutoriaCard
 import com.example.uvgenius.ui.theme.ContentDarkGray
 import com.example.uvgenius.ui.theme.PrimaryGreen
+import androidx.compose.material.icons.filled.CloudOff
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     val user = viewModel.usuarioLogeado
     val uiState = viewModel.homeUiState.collectAsStateWithLifecycle().value
-
+    val isOnline = viewModel.isOnline.collectAsStateWithLifecycle().value
     LaunchedEffect(user) {
         if (user == null) {
             navController.navigate(Routes.Login.route) {
@@ -53,13 +57,53 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = { BottomNavBar(navController) },
-        topBar = { TopNavBar(onLogout = {
-            viewModel.logout()
-            navController.navigate(Routes.Login.route){
-                popUpTo(0)
-                launchSingleTop = true
+        topBar = {
+            Column {
+                TopNavBar(onLogout = {
+                    viewModel.logout()
+                    navController.navigate(Routes.Login.route){
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                })
+                if (!isOnline) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFFFF9800),
+                        tonalElevation = 4.dp
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Cambia esto:
+                            Icon(
+                                painter = painterResource(R.drawable.ic_offline),
+                                contentDescription = "Offline",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+
+                            // Por esto (usando Material Icons):
+                            Icon(
+                                imageVector = Icons.Default.CloudOff, // O Icons.Default.WifiOff
+                                contentDescription = "Offline",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "Modo offline - Los cambios se sincronizarán cuando haya conexión",
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
             }
-        }) },
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -206,6 +250,10 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                                     viewModel.agregarTutoria(nueva)
                                 }
                                 showBottomSheet = false
+                                dia = ""
+                                horario = ""
+                                curso = ""
+                                tutor = ""
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),

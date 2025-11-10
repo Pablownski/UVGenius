@@ -13,30 +13,44 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.uvgenius.data.UVRepository
+import com.example.uvgenius.data.local.DatabaseProvider
 import com.example.uvgenius.navigation.AppNavHost
 import com.example.uvgenius.ui.theme.UVGeniusTheme
 import com.example.uvgenius.ui.view.AppVM
 import com.google.firebase.FirebaseApp
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
+
+        // Initialize repository
+        val database = DatabaseProvider.get(this)
+        val firebaseRef = Firebase.database.reference.child("usuarios")
+        val repository = UVRepository(database.usuarioDao(), firebaseRef)
+
         setContent {
             UVGeniusTheme {
                 val navController = rememberNavController()
-                val viewModel by remember { mutableStateOf(AppVM()) }
+                val viewModel by remember { mutableStateOf(AppVM(repository)) }
+
                 LaunchedEffect(Unit) {
+                    // Initial sync from Firebase to Room
                     viewModel.cargarUsuarios()
                 }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ){
                     AppNavHost(
                         navController = navController,
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        startDestination = "login"
                     )
                 }
             }

@@ -24,6 +24,7 @@ import com.example.uvgenius.ui.theme.PrimaryGreen
 import com.example.uvgenius.ui.view.AppVM
 
 
+
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AppVM) {
     var mail by remember { mutableStateOf("") }
@@ -97,11 +98,15 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
+
                     Button(
                         onClick = {
                             if (viewModel.checkLogin(mail, pass)) {
-                                viewModel.login(mail,pass)
-                                navController.navigate(Routes.Home.route)
+                                viewModel.login(mail, pass)
+                                navController.navigate(Routes.Home.route) {
+
+                                    popUpTo(0)
+                                }
                             } else {
                                 error = true
                             }
@@ -115,6 +120,8 @@ fun LoginScreen(navController: NavController, viewModel: AppVM) {
                     ) {
                         Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     }
+
+
 
                     Spacer(modifier = Modifier.height(12.dp))
 

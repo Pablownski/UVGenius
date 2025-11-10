@@ -4,70 +4,55 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.uvgenius.R
+import com.example.uvgenius.data.UVRepository
 import com.example.uvgenius.model.*
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AppVM : ViewModel() {
+class AppVM(private val repository: UVRepository) : ViewModel() {
 
     var userList = mutableStateListOf<Usuario>()
     var usuarioLogeado: Usuario? = null
 
     val defaultAvatar = "https://firebasestorage.googleapis.com/v0/b/uvgenius-24d2d.firebasestorage.app/o/defaultpfp.png?alt=media&token=6018f011-2b68-49ca-8b1d-7fbccd77de9a"
 
-    private val db = FirebaseDatabase.getInstance()
-    private val refUsuarios = db.getReference("usuarios")
+    private val _homeUiState = MutableStateFlow(HomeUiState())
+    val homeUiState = _homeUiState.asStateFlow()
+
+    private val _isOnline = MutableStateFlow(true)
+    val isOnline = _isOnline.asStateFlow()
+
+    init {
+        // Observe Room database for real-time updates
+        viewModelScope.launch {
+            repository.getUsuarios().collect { usuarios ->
+                userList.clear()
+                userList.addAll(usuarios)
+                Log.d("AppVM", "Usuarios actualizados: ${usuarios.size} (${if (_isOnline.value) "online" else "offline"})")
+            }
+        }
+    }
 
     fun cargarUsuarios(onComplete: (() -> Unit)? = null) {
-        refUsuarios.get().addOnSuccessListener { snapshot ->
-            userList.clear()
-            for (userSnapshot in snapshot.children) {
-                try {
-                    val id = userSnapshot.child("id").getValue(Int::class.java) ?: 0
-                    val nombre = userSnapshot.child("nombre").getValue(String::class.java) ?: ""
-                    val password = userSnapshot.child("password").getValue(String::class.java) ?: ""
-                    val carrera = userSnapshot.child("carrera").getValue(String::class.java) ?: ""
-                    val cursos = userSnapshot.child("cursos").children.mapNotNull { it.getValue(String::class.java) }
-                    val tutorias = userSnapshot.child("tutorias").children.mapNotNull {
-                        val dia = it.child("dia").getValue(String::class.java) ?: ""
-                        val horario = it.child("horario").getValue(String::class.java) ?: ""
-                        val curso = it.child("curso").getValue(String::class.java) ?: ""
-                        val tutor = it.child("tutor").getValue(String::class.java) ?: ""
-                        Tutoria(dia, horario, curso, tutor)
-                    }
-                    val telefono = userSnapshot.child("telefono").getValue(String::class.java) ?: ""
-                    val email = userSnapshot.child("email").getValue(String::class.java) ?: ""
-                    val descripcion = userSnapshot.child("descripcion").getValue(String::class.java) ?: ""
-                    val horarios = userSnapshot.child("horarios").getValue(String::class.java) ?: ""
-                    val avatarURL = userSnapshot.child("avatar").getValue(String::class.java) ?: defaultAvatar
+        viewModelScope.launch {
+            try {
+                // Intenta sincronizar desde Firebase
+                val syncSuccess = repository.syncFromRemote()
+                _isOnline.value = syncSuccess
 
-                    val usuario = Usuario(
-                        id = id,
-                        nombre = nombre,
-                        password = password,
-                        carrera = carrera,
-                        cursos = androidx.compose.runtime.snapshots.SnapshotStateList<String>().apply { addAll(cursos) },
-                        tutorias = androidx.compose.runtime.snapshots.SnapshotStateList<Tutoria>().apply { addAll(tutorias) },
-                        telefono = telefono,
-                        email = email,
-                        descripcion = descripcion,
-                        horarios = horarios,
-                        avatar = avatarURL
-                    )
-                    userList.add(usuario)
-                } catch (e: Exception) {
-                    Log.e("Firebase", "Error parseando usuario: ${e.message}")
+                if (syncSuccess) {
+                    Log.d("AppVM", "✓ Sincronización online completada")
+                } else {
+                    Log.d("AppVM", "⚠ Modo offline - usando caché local")
                 }
+
+                onComplete?.invoke()
+            } catch (e: Exception) {
+                _isOnline.value = false
+                Log.e("AppVM", "Error en sincronización: ${e.message}")
+                onComplete?.invoke()
             }
-            Log.d("Firebase", "Usuarios cargados: ${userList.size}")
-            onComplete?.invoke()
-        }.addOnFailureListener { e ->
-            Log.e("Firebase", "Error al obtener usuarios: ${e.message}")
-            onComplete?.invoke()
         }
     }
 
@@ -76,52 +61,34 @@ class AppVM : ViewModel() {
     }
 
     fun login(email: String, password: String) {
-        usuarioLogeado = userList.find { it.email == email && it.password == password }
-        Log.d("Login", "Usuario logueado: ${usuarioLogeado?.nombre}")
+        viewModelScope.launch {
+            usuarioLogeado = repository.login(email, password)
+            Log.d("Login", "Usuario logueado: ${usuarioLogeado?.nombre}")
+        }
     }
 
     fun logout() {
         usuarioLogeado = null
     }
 
-    private val _homeUiState = MutableStateFlow(HomeUiState())
-    val homeUiState = _homeUiState.asStateFlow()
-
-
     fun cargarTutorias() {
-
         viewModelScope.launch {
-
             _homeUiState.value = HomeUiState(isLoading = true)
             try {
                 val usuario = usuarioLogeado
-
                 if (usuario == null) {
                     _homeUiState.value = HomeUiState(error = "Usuario no logueado")
                     return@launch
                 }
 
-                // Obtener las tutorías más recientes desde Firebase
-                val ref = db.getReference("usuarios/${usuario.id}/tutorias")
-                ref.get().addOnSuccessListener { snapshot ->
-                    val nuevasTutorias = snapshot.children.mapNotNull {
-                        val dia = it.child("dia").getValue(String::class.java) ?: return@mapNotNull null
-                        val horario = it.child("horario").getValue(String::class.java) ?: return@mapNotNull null
-                        val curso = it.child("curso").getValue(String::class.java) ?: return@mapNotNull null
-                        val tutor = it.child("tutor").getValue(String::class.java) ?: return@mapNotNull null
-                        Tutoria(dia, horario, curso, tutor)
-                    }
-
-                    usuario.tutorias.clear()
-                    usuario.tutorias.addAll(nuevasTutorias)
-                    _homeUiState.value = HomeUiState(isLoading = false, tutorias = nuevasTutorias)
-                }.addOnFailureListener {
-                    _homeUiState.value = HomeUiState(error = "Error al leer tutorías")
-                }
-
+                // Datos ya están en Room, solo los mostramos
+                _homeUiState.value = HomeUiState(
+                    isLoading = false,
+                    tutorias = usuario.tutorias.toList()
+                )
             } catch (e: Exception) {
                 _homeUiState.value = HomeUiState(isLoading = false, error = e.message)
-                }
+            }
         }
     }
 
@@ -131,49 +98,38 @@ class AppVM : ViewModel() {
             try {
                 usuario.tutorias.add(nueva)
 
-                // Actualizar en Firebase
-                val ref = db.getReference("usuarios/${usuario.id}/tutorias")
-                ref.setValue(usuario.tutorias.toList())
-                    .addOnSuccessListener {
-                        Log.d("Firebase", "Tutoría agregada correctamente.")
-                    }
-                    .addOnFailureListener {
-                        Log.e("Firebase", "Error al agregar tutoría: ${it.message}")
-                    }
+                // Guarda en Room Y Firebase (si hay conexión)
+                repository.upsertUsuario(usuario)
 
-                // Actualizar UI localmente
+                // Update UI
                 _homeUiState.value = _homeUiState.value.copy(
                     tutorias = usuario.tutorias.toList()
                 )
+                Log.d("AppVM", "Tutoría agregada correctamente")
             } catch (e: Exception) {
-                Log.e("Firebase", "Error en agregarTutoria: ${e.message}")
-                }
+                Log.e("AppVM", "Error en agregarTutoria: ${e.message}")
             }
+        }
     }
+
     fun eliminarTutoria(tutoria: Tutoria) {
         viewModelScope.launch {
             val usuario = usuarioLogeado ?: return@launch
             try {
                 usuario.tutorias.remove(tutoria)
 
-                // Actualizar en Firebase
-                val ref = db.getReference("usuarios/${usuario.id}/tutorias")
-                ref.setValue(usuario.tutorias.toList())
-                    .addOnSuccessListener {
-                        Log.d("Firebase", "Tutoría eliminada correctamente.")
-                    }
-                    .addOnFailureListener {
-                        Log.e("Firebase", "Error al eliminar tutoría: ${it.message}")
-                    }
+                // Guarda en Room Y Firebase (si hay conexión)
+                repository.upsertUsuario(usuario)
 
-                // Actualizar UI localmente
+                // Update UI
                 _homeUiState.value = _homeUiState.value.copy(
                     tutorias = usuario.tutorias.toList()
                 )
+                Log.d("AppVM", "Tutoría eliminada correctamente")
             } catch (e: Exception) {
-                Log.e("Firebase", "Error en eliminarTutoria: ${e.message}")
-                }
+                Log.e("AppVM", "Error en eliminarTutoria: ${e.message}")
             }
+        }
     }
 
     fun updateUsuarioLogeado(
@@ -187,76 +143,37 @@ class AppVM : ViewModel() {
         horarios: String,
         avatar: String
     ) {
-        val usuario = usuarioLogeado ?: return
+        viewModelScope.launch {
+            val usuario = usuarioLogeado ?: return@launch
 
-        usuario.nombre = nombre
-        usuario.password = password
-        usuario.carrera = carrera
-        usuario.cursos.clear()
-        usuario.cursos.addAll(cursos)
-        usuario.telefono = telefono
-        usuario.email = email
-        usuario.descripcion = descripcion
-        usuario.horarios = horarios
-        usuario.avatar = avatar
+            usuario.nombre = nombre
+            usuario.password = password
+            usuario.carrera = carrera
+            usuario.cursos.clear()
+            usuario.cursos.addAll(cursos)
+            usuario.telefono = telefono
+            usuario.email = email
+            usuario.descripcion = descripcion
+            usuario.horarios = horarios
+            usuario.avatar = avatar
 
-        // Actualizar en Firebase
-        val ref = db.getReference("usuarios/${usuario.id}")
-        val userMap = mapOf(
-            "id" to usuario.id,
-            "nombre" to usuario.nombre,
-            "password" to usuario.password,
-            "carrera" to usuario.carrera,
-            "cursos" to usuario.cursos.toList(),
-            "tutorias" to usuario.tutorias.toList(),
-            "telefono" to usuario.telefono,
-            "email" to usuario.email,
-            "descripcion" to usuario.descripcion,
-            "horarios" to usuario.horarios,
-            "avatar" to usuario.avatar
-        )
-
-        ref.updateChildren(userMap)
-            .addOnSuccessListener {
-                Log.d("Firebase", "Perfil actualizado correctamente en la base de datos.")
-            }
-            .addOnFailureListener {
-                Log.e("Firebase", "Error al actualizar perfil: ${it.message}")
-            }
-    }
-
-    fun registrarUsuario(usuario: Usuario, onComplete: (() -> Unit)? = null) {
-        try {
-            val ref = db.getReference("usuarios/${usuario.id}")
-            val userMap = mapOf(
-                "id" to usuario.id,
-                "nombre" to usuario.nombre,
-                "password" to usuario.password,
-                "carrera" to usuario.carrera,
-                "cursos" to usuario.cursos.toList(),
-                "tutorias" to usuario.tutorias.toList(),
-                "telefono" to usuario.telefono,
-                "email" to usuario.email,
-                "descripcion" to usuario.descripcion,
-                "horarios" to usuario.horarios,
-                "avatar" to defaultAvatar
-            )
-
-            ref.setValue(userMap)
-                .addOnSuccessListener {
-                    Log.d("Firebase", "Usuario creado correctamente en la base de datos.")
-                    // Agregar a la lista local también
-                    userList.add(usuario)
-                    onComplete?.invoke()
-                }
-                .addOnFailureListener {
-                    Log.e("Firebase", "Error al registrar usuario: ${it.message}")
-                }
-
-        } catch (e: Exception) {
-            Log.e("Firebase", "Error en registrarUsuario: ${e.message}")
+            // Guarda en Room Y Firebase (si hay conexión)
+            repository.upsertUsuario(usuario)
+            Log.d("AppVM", "Perfil actualizado correctamente")
         }
     }
 
-
+    fun registrarUsuario(usuario: Usuario, onComplete: (() -> Unit)? = null) {
+        viewModelScope.launch {
+            try {
+                // Guarda en Room Y Firebase (si hay conexión)
+                repository.upsertUsuario(usuario)
+                userList.add(usuario)
+                Log.d("AppVM", "Usuario registrado correctamente")
+                onComplete?.invoke()
+            } catch (e: Exception) {
+                Log.e("AppVM", "Error al registrar usuario: ${e.message}")
+            }
+        }
+    }
 }

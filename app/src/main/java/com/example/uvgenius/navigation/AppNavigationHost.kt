@@ -9,8 +9,17 @@ import com.example.uvgenius.ui.screens.*
 import com.example.uvgenius.ui.view.AppVM
 
 @Composable
-fun AppNavHost(navController: NavHostController, viewModel: AppVM) {
-    NavHost(navController = navController, startDestination = Routes.Login.route) {
+fun AppNavHost(
+    navController: NavHostController,
+    viewModel: AppVM,
+    startDestination: String
+)
+{
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    )
+    {
         composable(Routes.Login.route) {
             LoginScreen(navController = navController, viewModel = viewModel)
         }
