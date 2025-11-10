@@ -38,7 +38,13 @@ fun TutorsListScreen(navController: NavController, viewModel: AppVM) {
     var showNoTutores by remember { mutableStateOf(true) }
 
     Scaffold(
-        topBar = { TopNavBar { viewModel.logout() } },
+        topBar = { TopNavBar {
+            viewModel.logout()
+            navController.navigate(Routes.Login.route){
+                popUpTo(0)
+                launchSingleTop = true
+            }
+        } },
         bottomBar = { BottomNavBar(navController) }
     ) { innerPadding ->
         Column(
