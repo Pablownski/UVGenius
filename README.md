@@ -45,10 +45,6 @@ y comunicarse con posibles estudiantes/tutores. Para efectos de laboratorio, se 
 └──────────────────────────┘     └─────────────────────────────┘
 </pre>
 
-Estados de la UI (mutuamente excluyentes):
-Cargando -> Muestra un spinner centrado sobre las tutorías actuales
-Success -> Muestra la lista de tutorías
-
 
 <h2>Decisiones de Diseño</h2>
 Los puntos que se desarrollaron son:
