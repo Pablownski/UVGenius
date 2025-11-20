@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "693088691849",
+    "project_id": "uvgenius-24d2d",
+    "storage_bucket": "uvgenius-24d2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:693088691849:android:cdb8660eace8613240c858",
+        "android_client_info": {
+          "package_name": "com.example.uvgenius"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrxCKZsWnddEQfihdUoaCo1Zgb-xEDbC8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
