@@ -54,6 +54,8 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
     var curso by remember { mutableStateOf("") }
     var tutor by remember { mutableStateOf("") }
 
+    var showMissingFieldsError by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = { BottomNavBar(navController) },
@@ -77,15 +79,6 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-
-                            Icon(
-                                painter = painterResource(R.drawable.ic_offline),
-                                contentDescription = "Offline",
-                                tint = Color.White,
-                                modifier = Modifier.size(16.dp)
-                            )
-
-
                             Icon(
                                 imageVector = Icons.Default.CloudOff,
                                 contentDescription = "Offline",
@@ -242,6 +235,11 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
 
                     Spacer(Modifier.height(12.dp))
 
+                    if (showMissingFieldsError){
+                        Text("Por favor, complete todos los campos.",
+                            color = MaterialTheme.colorScheme.error)
+                        Spacer(Modifier.height(8.dp))
+                    }
                     Button(
                         onClick = {
                             if (dia.isNotBlank() && horario.isNotBlank() && curso.isNotBlank()) {
@@ -249,11 +247,14 @@ fun HomeScreen(navController: NavHostController, viewModel: AppVM) {
                                 if (!uiState.isLoading){
                                     viewModel.agregarTutoria(nueva)
                                 }
+                                showMissingFieldsError = false
                                 showBottomSheet = false
                                 dia = ""
                                 horario = ""
                                 curso = ""
                                 tutor = ""
+                            } else {
+                                showMissingFieldsError = true
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
